@@ -49,7 +49,11 @@
 
 <!-- Hero -->
 <section class="home-hero">
-  <div class="home-hero-bg"></div>
+  <div class="home-hero-bg">
+    <div class="map-3d-wrapper">
+      <canvas id="hero-canvas"></canvas>
+    </div>
+  </div>
   <div class="home-hero-overlay"></div>
   <div class="home-hero-content fade-up">
     <p class="home-hero-eyebrow">The World's Largest BJJ Directory</p>
@@ -483,5 +487,225 @@
 </nav>
 
 <script src="js/app.js"></script>
+<script>
+(function initHeroMap() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // US cities: [lat, lng, weight 1-3]
+  const CITIES = [
+    [34.05,-118.25,3],[37.77,-122.42,2],[47.61,-122.33,2],[45.52,-122.68,1],
+    [36.17,-115.14,2],[39.74,-104.98,2],[33.45,-112.07,2],[32.72,-117.16,2],
+    [32.78,-96.80, 3],[29.76,-95.37, 3],[30.27,-97.74, 2],[29.42,-98.49, 1],
+    [44.98,-93.27, 2],[41.85,-87.65, 3],[42.33,-83.05, 2],[36.17,-86.78, 2],
+    [33.75,-84.39, 3],[25.77,-80.19, 2],[28.54,-81.38, 1],[35.23,-80.84, 2],
+    [38.90,-77.04, 3],[39.95,-75.17, 2],[40.71,-74.01, 3],[42.36,-71.06, 2],
+    [39.10,-94.58, 2],[29.95,-90.07, 2],[35.15,-90.05, 1],[39.96,-82.99, 1],
+    [35.47,-97.52, 1],[40.76,-111.89,1],[39.77,-86.16, 1],[40.44,-79.99, 2],
+    [35.78,-78.64, 1],[27.95,-82.46, 2],[38.25,-85.76, 1],[38.63,-90.20, 2],
+    [43.05,-76.15, 1],[32.22,-110.97,1],[38.58,-121.49,1],[36.75,-76.30, 1],
+  ];
+
+  const LAT_MIN = 23, LAT_MAX = 51;
+  const LNG_MIN = -128, LNG_MAX = -63;
+
+  let W = 0, H = 0, t = 0;
+  const arcs = [];
+  const MAX_ARCS = 7;
+
+  function resize() {
+    const wrap = canvas.parentElement;
+    W = wrap.offsetWidth;
+    H = wrap.offsetHeight;
+    canvas.width  = W;
+    canvas.height = H;
+  }
+
+  function project(lat, lng) {
+    const x = (lng - LNG_MIN) / (LNG_MAX - LNG_MIN) * W;
+    const y = (1 - (lat - LAT_MIN) / (LAT_MAX - LAT_MIN)) * H;
+    return [x, y];
+  }
+
+  function drawGrid() {
+    const step = Math.max(W, H) * 0.038;
+    ctx.fillStyle = 'rgba(90,130,220,0.07)';
+    for (let x = step / 2; x < W; x += step) {
+      for (let y = step / 2; y < H; y += step) {
+        ctx.beginPath();
+        ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
+  function drawLatLines() {
+    ctx.strokeStyle = 'rgba(80,120,200,0.04)';
+    ctx.lineWidth = 0.8;
+    for (let lat = 25; lat <= 50; lat += 5) {
+      const [, y] = project(lat, LNG_MIN);
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+    for (let lng = -125; lng <= -65; lng += 10) {
+      const [x] = project(LAT_MIN, lng);
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, H);
+      ctx.stroke();
+    }
+  }
+
+  function drawCities() {
+    CITIES.forEach(([lat, lng, w]) => {
+      const [x, y] = project(lat, lng);
+      if (x < -40 || x > W + 40 || y < -40 || y > H + 40) return;
+
+      const pulse = Math.sin(t * 0.025 + lat * 7.3 + lng * 3.1) * 0.5 + 0.5;
+      const r = 2 + w * 0.8;
+
+      // Outer halo
+      const outerR = r * (8 + pulse * 5) * (w / 3 + 0.4);
+      const g0 = ctx.createRadialGradient(x, y, 0, x, y, outerR);
+      g0.addColorStop(0, `rgba(60,160,255,${0.12 * w / 3})`);
+      g0.addColorStop(1, 'rgba(60,160,255,0)');
+      ctx.fillStyle = g0;
+      ctx.beginPath(); ctx.arc(x, y, outerR, 0, Math.PI * 2); ctx.fill();
+
+      // Mid glow
+      const midR = r * 3.5;
+      const g1 = ctx.createRadialGradient(x, y, 0, x, y, midR);
+      g1.addColorStop(0, `rgba(160,210,255,${0.55 * (0.7 + pulse * 0.3)})`);
+      g1.addColorStop(0.5, 'rgba(80,160,255,0.2)');
+      g1.addColorStop(1, 'rgba(80,160,255,0)');
+      ctx.fillStyle = g1;
+      ctx.beginPath(); ctx.arc(x, y, midR, 0, Math.PI * 2); ctx.fill();
+
+      // Pin dot
+      ctx.fillStyle = w === 3 ? 'rgba(255,255,255,0.95)' : 'rgba(200,230,255,0.85)';
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+
+      // Pulse ring (major cities only)
+      if (w >= 2) {
+        const ringR = r + 4 + pulse * 10;
+        const ringA = (1 - pulse) * 0.35;
+        ctx.strokeStyle = `rgba(100,190,255,${ringA})`;
+        ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.arc(x, y, ringR, 0, Math.PI * 2); ctx.stroke();
+      }
+    });
+  }
+
+  function bezier(t, x1, y1, cx, cy, x2, y2) {
+    const m = 1 - t;
+    return [
+      m*m*x1 + 2*m*t*cx + t*t*x2,
+      m*m*y1 + 2*m*t*cy + t*t*y2,
+    ];
+  }
+
+  function spawnArc() {
+    if (arcs.length >= MAX_ARCS) return;
+    const i = Math.floor(Math.random() * CITIES.length);
+    let j = Math.floor(Math.random() * CITIES.length);
+    while (j === i) j = Math.floor(Math.random() * CITIES.length);
+
+    const [x1, y1] = project(CITIES[i][0], CITIES[i][1]);
+    const [x2, y2] = project(CITIES[j][0], CITIES[j][1]);
+    const dist = Math.hypot(x2 - x1, y2 - y1);
+
+    // Prefer longer arcs (more dramatic)
+    if (dist < W * 0.15) return;
+
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2 - dist * 0.28;
+
+    arcs.push({ x1, y1, x2, y2, mx, my,
+      progress: 0,
+      speed: 0.005 + Math.random() * 0.004,
+      life: 0, maxLife: 280 + Math.random() * 160,
+    });
+  }
+
+  function drawArcs() {
+    for (let i = arcs.length - 1; i >= 0; i--) {
+      const a = arcs[i];
+      const fade = Math.min(a.life / 25, 1) * Math.min((a.maxLife - a.life) / 25, 1);
+
+      // Arc path
+      ctx.strokeStyle = `rgba(60,140,255,${0.18 * fade})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(a.x1, a.y1);
+      ctx.quadraticCurveTo(a.mx, a.my, a.x2, a.y2);
+      ctx.stroke();
+
+      // Particle + trail
+      const [px, py] = bezier(a.progress, a.x1, a.y1, a.mx, a.my, a.x2, a.y2);
+      for (let s = 3; s >= 0; s--) {
+        const tp = Math.max(0, a.progress - s * 0.025);
+        const [tx, ty] = bezier(tp, a.x1, a.y1, a.mx, a.my, a.x2, a.y2);
+        const tr = s === 0 ? 4.5 : 2.5 / (s + 0.5);
+        const ta = s === 0 ? 0.9 * fade : (0.3 / s) * fade;
+        const gp = ctx.createRadialGradient(tx, ty, 0, tx, ty, tr * 2.5);
+        gp.addColorStop(0, `rgba(255,255,255,${ta})`);
+        gp.addColorStop(0.4, `rgba(120,210,255,${ta * 0.5})`);
+        gp.addColorStop(1, 'rgba(120,210,255,0)');
+        ctx.fillStyle = gp;
+        ctx.beginPath(); ctx.arc(tx, ty, tr * 2.5, 0, Math.PI * 2); ctx.fill();
+      }
+
+      a.progress += a.speed;
+      a.life++;
+      if (a.life >= a.maxLife || a.progress > 1.02) arcs.splice(i, 1);
+    }
+  }
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Base background
+    ctx.fillStyle = '#080e1c';
+    ctx.fillRect(0, 0, W, H);
+
+    // Atmospheric depth fog (top = further away)
+    const fog = ctx.createLinearGradient(0, 0, 0, H);
+    fog.addColorStop(0,   'rgba(6,10,22,0.55)');
+    fog.addColorStop(0.4, 'rgba(6,10,22,0)');
+    fog.addColorStop(1,   'rgba(6,10,22,0)');
+
+    drawLatLines();
+    drawGrid();
+    drawArcs();
+    drawCities();
+
+    // Overlay fog after drawing
+    ctx.fillStyle = fog;
+    ctx.fillRect(0, 0, W, H);
+
+    // Subtle vignette edges
+    const vig = ctx.createRadialGradient(W/2, H/2, H*0.3, W/2, H/2, H*0.9);
+    vig.addColorStop(0, 'rgba(6,10,22,0)');
+    vig.addColorStop(1, 'rgba(6,10,22,0.45)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, W, H);
+
+    if (Math.random() < 0.018) spawnArc();
+    t++;
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', () => { resize(); });
+  resize();
+
+  // Pre-seed arcs
+  for (let i = 0; i < 5; i++) setTimeout(spawnArc, i * 600);
+
+  frame();
+})();
+</script>
 </body>
 </html>
