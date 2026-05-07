@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gracie Barra Austin — BJJ Academy in Austin, TX | MatMade</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .gym-content { padding: clamp(32px, 5vw, 56px) 0; }
+
+    .content-section {
+      padding: clamp(24px, 3vw, 36px) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .content-section:last-child { border-bottom: none; }
+    .content-section h3 { margin-bottom: 16px; }
+
+    .program-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .program-card {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 18px 16px;
+      transition: all 0.15s;
+    }
+    .program-card:hover { border-color: var(--navy); background: var(--bg-tint); }
+    .program-card-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .program-card-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+    .program-card-level { font-size: 0.775rem; color: var(--text-dim); margin-top: 3px; }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 180px 180px;
+      gap: 8px;
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+    .gallery-grid img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-main { grid-row: 1 / 3; }
+    @media (max-width: 640px) {
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 160px 120px; }
+      .gallery-main { grid-row: auto; }
+    }
+
+    .schedule-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+    .schedule-day-header {
+      padding: 10px 16px;
+      background: var(--bg-tint);
+      font-weight: 700; font-size: 0.8rem;
+      color: var(--text-mid);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    .reviews-grid { display: grid; gap: 16px; }
+
+    .rating-breakdown {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-bottom: 24px;
+    }
+    .rating-bar-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.8rem; color: var(--text-dim);
+    }
+    .rating-bar-row .label { width: 32px; text-align: right; flex-shrink: 0; }
+    .rating-bar-track {
+      flex: 1; height: 6px; background: var(--border);
+      border-radius: 3px; overflow: hidden;
+    }
+    .rating-bar-fill { height: 100%; background: var(--star); border-radius: 3px; }
+    .rating-bar-count { width: 28px; flex-shrink: 0; }
+
+    /* Mobile CTA bar */
+    .mobile-cta-bar {
+      display: none;
+      position: fixed; bottom: 72px; left: 0; right: 0;
+      z-index: 200;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      gap: 10px;
+    }
+    @media (max-width: 768px) { .mobile-cta-bar { display: flex; } }
+
+    .sticky-cta { position: sticky; top: 80px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">mat<span>made</span></a>
+    <div class="nav-search">
+      <input type="text" placeholder="Search gyms…" aria-label="Search gyms">
+      <svg class="nav-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">Find Gyms</a>
+      <a href="#" class="nav-link">The Show</a>
+      <a href="#" class="btn btn-outline btn-sm" style="border-radius:999px">Add Your Gym</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="gym-hero">
+  <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1400&q=80" alt="Gracie Barra Austin training floor" loading="eager">
+  <div class="gym-hero-overlay"></div>
+  <div class="gym-hero-content">
+    <div class="breadcrumb" style="color:oklch(75% 0.02 258); margin-bottom:8px">
+      <a href="index.html" style="color:oklch(75% 0.02 258)">Home</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="state.html" style="color:oklch(75% 0.02 258)">Texas</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="city.html" style="color:oklch(75% 0.02 258)">Austin</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>Gracie Barra Austin</span>
+    </div>
+    <h1>Gracie Barra Austin</h1>
+    <div class="gym-hero-meta">
+      <div class="rating-row">
+        <span class="stars" style="color:var(--star)">★★★★★</span>
+        <span class="score" style="color:white">4.9</span>
+        <span class="count">142 reviews</span>
+      </div>
+      <span class="badge badge-verified">✓ Verified</span>
+      <span class="badge badge-open">Open Now · Closes 9pm</span>
+    </div>
+  </div>
+</div>
+
+<!-- Tab bar -->
+<div style="background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:60px; z-index:100">
+  <div class="container">
+    <div class="tab-bar">
+      <div class="tab active" data-tab="overview">Overview</div>
+      <div class="tab" data-tab="programs">Programs</div>
+      <div class="tab" data-tab="schedule">Schedule</div>
+      <div class="tab" data-tab="instructors">Instructors</div>
+      <div class="tab" data-tab="reviews">Reviews</div>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="gym-content">
+  <div class="container">
+    <div class="info-grid">
+
+      <!-- Main column -->
+      <div>
+
+        <!-- Overview -->
+        <div class="content-section">
+          <h3>About Gracie Barra Austin</h3>
+          <p style="color:var(--text-mid); line-height:1.8; margin-bottom:12px">Gracie Barra Austin is one of Austin's most established Brazilian Jiu-Jitsu academies, part of the world's largest BJJ organization founded by Master Carlos Gracie Jr. Training here means access to a proven, structured curriculum that has developed thousands of black belts worldwide.</p>
+          <p style="color:var(--text-mid); line-height:1.8">Whether you're stepping onto the mat for the first time or preparing for your next competition, GB Austin offers morning and evening classes seven days a week. The academy maintains a welcoming atmosphere without sacrificing intensity — students at every rank are expected to train smart and train hard.</p>
+        </div>
+
+        <!-- Gallery -->
+        <div class="content-section">
+          <h3>Photos</h3>
+          <div class="gallery-grid">
+            <div class="gallery-main">
+              <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=75" alt="Training floor" loading="lazy">
+            </div>
+            <img src="https://images.unsplash.com/photo-1555597673-b21d5c935865?w=300&q=75" alt="Drilling class" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=300&q=75" alt="Kids class" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&q=75" alt="Open mat" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1546483875-ad9014c88eba?w=300&q=75" alt="Competition team" loading="lazy">
+          </div>
+        </div>
+
+        <!-- Programs -->
+        <div class="content-section">
+          <h3>Programs</h3>
+          <div class="program-grid">
+            <div class="program-card">
+              <div class="program-card-icon">🥋</div>
+              <div class="program-card-name">Brazilian Jiu-Jitsu (Gi)</div>
+              <div class="program-card-level">All levels · Fundamentals to advanced</div>
+            </div>
+            <div class="program-card">
+              <div class="program-card-icon">👊</div>
+              <div class="program-card-name">No-Gi Submission</div>
+              <div class="program-card-level">Intermediate–Advanced</div>
+            </div>
+            <div class="program-card">
+              <div class="program-card-icon">🧒</div>
+              <div class="program-card-name">Kids BJJ</div>
+              <div class="program-card-level">Ages 4–14 · 3 age groups</div>
+            </div>
+            <div class="program-card">
+              <div class="program-card-icon">🏆</div>
+              <div class="program-card-name">Competition Team</div>
+              <div class="program-card-level">Intermediate–Advanced</div>
+            </div>
+            <div class="program-card">
+              <div class="program-card-icon">👩</div>
+              <div class="program-card-name">Women's Only</div>
+              <div class="program-card-level">All levels · Saturdays 10am</div>
+            </div>
+            <div class="program-card">
+              <div class="program-card-icon">💼</div>
+              <div class="program-card-name">Fundamentals</div>
+              <div class="program-card-level">Beginners welcome</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="content-section">
+          <h3>Weekly Schedule</h3>
+          <div class="schedule-wrapper">
+            <div class="schedule-day-header">Monday — Wednesday — Friday</div>
+            <table class="schedule-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Class</th>
+                  <th>Level</th>
+                  <th>Instructor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>6:00am</td><td>Fundamentals BJJ</td><td>All Levels</td><td>Prof. Marcus Almeida</td></tr>
+                <tr><td>7:00am</td><td>Open Mat</td><td>Blue Belt+</td><td>Self-directed</td></tr>
+                <tr><td>12:00pm</td><td>Noon BJJ</td><td>All Levels</td><td>Prof. Carlos Santos</td></tr>
+                <tr><td>5:30pm</td><td>Kids BJJ (Ages 7–12)</td><td>Youth</td><td>Coach Ana Lima</td></tr>
+                <tr><td>6:30pm</td><td>Fundamentals BJJ</td><td>All Levels</td><td>Prof. Marcus Almeida</td></tr>
+                <tr><td>7:30pm</td><td>Advanced BJJ</td><td>Blue Belt+</td><td>Prof. Carlos Santos</td></tr>
+              </tbody>
+            </table>
+            <div class="schedule-day-header">Tuesday — Thursday</div>
+            <table class="schedule-table">
+              <tbody>
+                <tr><td>6:00am</td><td>No-Gi Grappling</td><td>All Levels</td><td>Prof. Marcus Almeida</td></tr>
+                <tr><td>5:30pm</td><td>Kids Little Champions (4–6)</td><td>Youth</td><td>Coach Ana Lima</td></tr>
+                <tr><td>6:30pm</td><td>No-Gi Submission</td><td>Intermediate</td><td>Prof. Carlos Santos</td></tr>
+                <tr><td>7:30pm</td><td>Competition Training</td><td>Advanced</td><td>Prof. Marcus Almeida</td></tr>
+              </tbody>
+            </table>
+            <div class="schedule-day-header">Saturday</div>
+            <table class="schedule-table">
+              <tbody>
+                <tr><td>9:00am</td><td>All Levels BJJ</td><td>All Levels</td><td>Prof. Carlos Santos</td></tr>
+                <tr><td>10:00am</td><td>Women's Only BJJ</td><td>All Levels</td><td>Prof. Marcus Almeida</td></tr>
+                <tr><td>11:00am</td><td>Open Mat</td><td>All Levels</td><td>Self-directed</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Instructors -->
+        <div class="content-section">
+          <h3>Instructors</h3>
+          <div style="display:grid; gap:12px;">
+            <a href="instructor.html" style="text-decoration:none">
+              <div class="instructor-card">
+                <div class="instructor-photo">
+                  <img src="https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=120&q=75" alt="Prof. Marcus Almeida" loading="lazy">
+                </div>
+                <div class="instructor-info">
+                  <div class="instructor-name">Prof. Marcus Almeida</div>
+                  <div class="instructor-title">Head Instructor · Black Belt 3rd Degree</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="badge badge-program" style="font-size:0.7rem">BJJ</span>
+                    <span class="badge badge-program" style="font-size:0.7rem">No-Gi</span>
+                    <span class="badge badge-program" style="font-size:0.7rem">Competition</span>
+                  </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-dim);flex-shrink:0" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </a>
+            <div class="instructor-card">
+              <div class="instructor-photo">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&q=75" alt="Prof. Carlos Santos" loading="lazy">
+              </div>
+              <div class="instructor-info">
+                <div class="instructor-name">Prof. Carlos Santos</div>
+                <div class="instructor-title">Assistant Instructor · Black Belt 1st Degree</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <span class="badge badge-program" style="font-size:0.7rem">BJJ</span>
+                  <span class="badge badge-program" style="font-size:0.7rem">Fundamentals</span>
+                </div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-dim);flex-shrink:0" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="instructor-card">
+              <div class="instructor-photo">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&q=75" alt="Coach Ana Lima" loading="lazy">
+              </div>
+              <div class="instructor-info">
+                <div class="instructor-name">Coach Ana Lima</div>
+                <div class="instructor-title">Kids Program Lead · Brown Belt</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <span class="badge badge-program" style="font-size:0.7rem">Kids</span>
+                  <span class="badge badge-program" style="font-size:0.7rem">Women's Only</span>
+                </div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-dim);flex-shrink:0" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="content-section">
+          <h3>Reviews</h3>
+          <div style="display:grid; grid-template-columns: auto 1fr; gap:32px; align-items:start; margin-bottom:32px">
+            <div style="text-align:center">
+              <div style="font-family:var(--font-display); font-weight:800; font-size:3.5rem; color:var(--text); line-height:1; letter-spacing:-0.04em">4.9</div>
+              <div class="stars" style="font-size:1.2rem; margin:4px 0">★★★★★</div>
+              <div style="font-size:0.8rem; color:var(--text-dim)">142 reviews</div>
+            </div>
+            <div class="rating-breakdown">
+              <div class="rating-bar-row">
+                <span class="label">5★</span>
+                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:88%"></div></div>
+                <span class="rating-bar-count">125</span>
+              </div>
+              <div class="rating-bar-row">
+                <span class="label">4★</span>
+                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:9%"></div></div>
+                <span class="rating-bar-count">13</span>
+              </div>
+              <div class="rating-bar-row">
+                <span class="label">3★</span>
+                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:2%"></div></div>
+                <span class="rating-bar-count">3</span>
+              </div>
+              <div class="rating-bar-row">
+                <span class="label">2★</span>
+                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:1%"></div></div>
+                <span class="rating-bar-count">1</span>
+              </div>
+              <div class="rating-bar-row">
+                <span class="label">1★</span>
+                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:0%"></div></div>
+                <span class="rating-bar-count">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="reviews-grid">
+            <div class="review-card">
+              <div class="review-header">
+                <div class="review-avatar">JR</div>
+                <div>
+                  <div class="review-name">James Rodriguez</div>
+                  <div class="review-meta">
+                    <span class="stars" style="font-size:0.75rem">★★★★★</span>
+                    <span class="review-date">2 weeks ago</span>
+                    <span class="badge badge-program" style="font-size:0.65rem;padding:1px 7px">Blue Belt</span>
+                  </div>
+                </div>
+              </div>
+              <p class="review-body">Been training here for 18 months. The curriculum is structured and progressive — I never feel lost. Prof. Marcus is incredibly technical and takes time to break down concepts for newer students. The competition team pushed me to hit my first tournament podium last fall.</p>
+            </div>
+            <div class="review-card">
+              <div class="review-header">
+                <div class="review-avatar">SP</div>
+                <div>
+                  <div class="review-name">Sarah Park</div>
+                  <div class="review-meta">
+                    <span class="stars" style="font-size:0.75rem">★★★★★</span>
+                    <span class="review-date">1 month ago</span>
+                    <span class="badge badge-program" style="font-size:0.65rem;padding:1px 7px">White Belt</span>
+                  </div>
+                </div>
+              </div>
+              <p class="review-body">Started as a total beginner with zero martial arts background. The fundamentals classes are exactly what a new student needs — no ego, just technique. Coach Ana's women's Saturday class has been a huge confidence builder for me. The community here is genuinely welcoming.</p>
+            </div>
+            <div class="review-card">
+              <div class="review-header">
+                <div class="review-avatar">MT</div>
+                <div>
+                  <div class="review-name">Mike Thompson</div>
+                  <div class="review-meta">
+                    <span class="stars" style="font-size:0.75rem">★★★★★</span>
+                    <span class="review-date">3 months ago</span>
+                    <span class="badge badge-program" style="font-size:0.65rem;padding:1px 7px">Purple Belt</span>
+                  </div>
+                </div>
+              </div>
+              <p class="review-body">Trained at several GB affiliates while traveling for work — this one ranks in the top 3. The level of instruction is consistent with what you expect from the GB brand, but the culture here is especially good. High-level training partners without the toxic competitiveness you find at some competition schools.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div>
+        <div class="info-sidebar sticky-cta">
+          <div class="info-sidebar-header">
+            <h3 style="margin-bottom:12px">Get Started</h3>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:8px">
+              Get Your Free Trial Class
+            </button>
+            <button class="btn btn-outline" style="width:100%;justify-content:center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              (512) 555-0182
+            </button>
+          </div>
+          <div class="info-sidebar-row">
+            <svg class="info-sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <div class="info-sidebar-label">Address</div>
+              <div class="info-sidebar-value">2601 S Lamar Blvd<br>Austin, TX 78704</div>
+            </div>
+          </div>
+          <div class="info-sidebar-row">
+            <svg class="info-sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div>
+              <div class="info-sidebar-label">Hours Today</div>
+              <div class="info-sidebar-value" style="color: oklch(35% 0.14 150)">Open · Closes 9:00pm</div>
+            </div>
+          </div>
+          <div class="info-sidebar-row">
+            <svg class="info-sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div>
+              <div class="info-sidebar-label">Website</div>
+              <div class="info-sidebar-value" style="color:var(--navy-soft)">graciebarra.com/austin</div>
+            </div>
+          </div>
+          <div class="info-sidebar-row">
+            <svg class="info-sidebar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <div>
+              <div class="info-sidebar-label">Founded</div>
+              <div class="info-sidebar-value">2011 · Carlos Gracie Jr. lineage</div>
+            </div>
+          </div>
+          <div class="info-sidebar-row">
+            <div style="width:16px;flex-shrink:0"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <a href="#" style="display:flex;align-items:center;gap:5px;font-size:0.8rem;color:var(--navy-soft);font-weight:500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.4 5.4 3.9 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+                Twitter
+              </a>
+              <a href="#" style="display:flex;align-items:center;gap:5px;font-size:0.8rem;color:var(--navy-soft);font-weight:500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                Instagram
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Mobile CTA bar -->
+<div class="mobile-cta-bar">
+  <button class="btn btn-outline" style="flex:1;justify-content:center;font-size:0.85rem">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    Call
+  </button>
+  <button class="btn btn-primary" style="flex:2;justify-content:center;font-size:0.85rem">
+    Free Trial Class
+  </button>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">mat<span>made</span></div>
+        <p class="footer-desc">The world's largest BJJ and martial arts gym directory.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="state.html">Texas Gyms</a></li>
+          <li><a href="city.html">Austin Gyms</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Content</div>
+        <ul class="footer-links">
+          <li><a href="#">The Show</a></li>
+          <li><a href="#">Stories</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Add Your Gym</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MatMade. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="city.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </a>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      Map
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </div>
+  </div>
+</nav>
+
+<script src="js/app.js"></script>
+</body>
+</html>

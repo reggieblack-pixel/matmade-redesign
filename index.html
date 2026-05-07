@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MatMade — Find BJJ & Martial Arts Academies Near You</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Homepage-specific */
+    .popular-cities { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+    .how-step { display: flex; gap: 24px; align-items: flex-start; }
+    .how-step-num {
+      font-family: var(--font-display); font-weight: 800; font-size: 3.5rem;
+      color: var(--border); line-height: 1; flex-shrink: 0; width: 64px;
+      letter-spacing: -0.04em;
+    }
+    .how-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; }
+    .program-explore { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .program-tile {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-md); padding: 20px 16px; text-align: center;
+      cursor: pointer; transition: all 0.15s var(--ease-out);
+    }
+    .program-tile:hover { border-color: var(--navy); background: var(--bg-tint); transform: translateY(-2px); }
+    .program-tile-icon { font-size: 2rem; margin-bottom: 8px; }
+    .program-tile-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+    .program-tile-count { font-size: 0.775rem; color: var(--text-dim); margin-top: 3px; }
+    .top-states { overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">mat<span>made</span></a>
+    <div class="nav-search">
+      <input type="text" placeholder="City, state, or gym name…" aria-label="Search gyms">
+      <svg class="nav-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">Find Gyms</a>
+      <a href="#" class="nav-link">The Show</a>
+      <a href="#" class="nav-link">Stories</a>
+      <a href="#" class="btn btn-outline btn-sm" style="border-radius:999px">Add Your Gym</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="home-hero">
+  <div class="home-hero-bg"></div>
+  <div class="home-hero-overlay"></div>
+  <div class="home-hero-content fade-up">
+    <p class="home-hero-eyebrow">The World's Largest BJJ Directory</p>
+    <h1>Find Your Academy.</h1>
+    <p class="home-hero-sub">8,400+ verified gyms across 50 states. Search by location, program, or instructor.</p>
+    <div class="hero-search-box" role="search">
+      <input type="text" placeholder="Search Austin, TX…" aria-label="City or gym name">
+      <div class="hero-search-divider" aria-hidden="true"></div>
+      <button class="hero-search-btn" aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Stats bar -->
+<div class="stats-bar">
+  <div class="container stats-bar-inner">
+    <div class="stat-item fade-up">
+      <div class="stat-value">8,<span>400</span>+</div>
+      <div class="stat-label">Academies Listed</div>
+    </div>
+    <div class="stat-item fade-up fade-up-delay-1">
+      <div class="stat-value"><span>50</span></div>
+      <div class="stat-label">States Covered</div>
+    </div>
+    <div class="stat-item fade-up fade-up-delay-2">
+      <div class="stat-value">3,<span>000</span>+</div>
+      <div class="stat-label">Cities &amp; Towns</div>
+    </div>
+    <div class="stat-item fade-up fade-up-delay-3">
+      <div class="stat-value"><span>12</span>+</div>
+      <div class="stat-label">Disciplines</div>
+    </div>
+  </div>
+</div>
+
+<!-- Browse by program -->
+<section class="section-sm">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <p class="section-eyebrow">Explore by Discipline</p>
+        <h2>What do you want to train?</h2>
+      </div>
+    </div>
+    <div class="program-explore">
+      <div class="program-tile">
+        <div class="program-tile-icon">🥋</div>
+        <div class="program-tile-name">BJJ / No-Gi</div>
+        <div class="program-tile-count">6,200+ gyms</div>
+      </div>
+      <div class="program-tile">
+        <div class="program-tile-icon">🥊</div>
+        <div class="program-tile-name">MMA</div>
+        <div class="program-tile-count">3,100+ gyms</div>
+      </div>
+      <div class="program-tile">
+        <div class="program-tile-icon">👊</div>
+        <div class="program-tile-name">Muay Thai</div>
+        <div class="program-tile-count">2,800+ gyms</div>
+      </div>
+      <div class="program-tile">
+        <div class="program-tile-icon">🤼</div>
+        <div class="program-tile-name">Wrestling</div>
+        <div class="program-tile-count">1,400+ gyms</div>
+      </div>
+      <div class="program-tile">
+        <div class="program-tile-icon">🥇</div>
+        <div class="program-tile-name">Judo</div>
+        <div class="program-tile-count">980+ gyms</div>
+      </div>
+      <div class="program-tile">
+        <div class="program-tile-icon">🧘</div>
+        <div class="program-tile-name">Kids Programs</div>
+        <div class="program-tile-count">4,500+ gyms</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured gyms -->
+<section class="section" style="background: var(--bg-tint);">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <p class="section-eyebrow">Top Rated</p>
+        <h2>Featured Academies</h2>
+      </div>
+      <a href="state.html" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    <div class="grid-3">
+
+      <!-- Card 1 -->
+      <article class="gym-card" onclick="location.href='gym.html'">
+        <div class="gym-card-photo">
+          <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=640&q=75" alt="Gracie Barra Austin" loading="lazy">
+          <div class="gym-card-overlay"></div>
+          <div class="gym-card-badges">
+            <span class="badge badge-verified" style="font-size:0.7rem">✓ Verified</span>
+          </div>
+        </div>
+        <div class="gym-card-body">
+          <div class="gym-card-name">Gracie Barra Austin</div>
+          <div class="gym-card-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Austin, TX
+          </div>
+          <div class="gym-card-programs">
+            <span class="badge badge-program">BJJ</span>
+            <span class="badge badge-program">No-Gi</span>
+            <span class="badge badge-program">Kids</span>
+          </div>
+          <div class="gym-card-meta">
+            <div class="gym-card-rating">
+              <span class="stars">★★★★★</span>
+              <strong>4.9</strong>
+              <span>(142 reviews)</span>
+            </div>
+            <span class="gym-card-action">View →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="gym-card">
+        <div class="gym-card-photo">
+          <img src="https://images.unsplash.com/photo-1555597673-b21d5c935865?w=640&q=75" alt="Atos Jiu-Jitsu HQ" loading="lazy">
+          <div class="gym-card-overlay"></div>
+          <div class="gym-card-badges">
+            <span class="badge badge-verified" style="font-size:0.7rem">✓ Verified</span>
+          </div>
+        </div>
+        <div class="gym-card-body">
+          <div class="gym-card-name">Atos Jiu-Jitsu HQ</div>
+          <div class="gym-card-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            San Diego, CA
+          </div>
+          <div class="gym-card-programs">
+            <span class="badge badge-program">BJJ</span>
+            <span class="badge badge-program">No-Gi</span>
+            <span class="badge badge-program">Competition</span>
+          </div>
+          <div class="gym-card-meta">
+            <div class="gym-card-rating">
+              <span class="stars">★★★★★</span>
+              <strong>4.8</strong>
+              <span>(98 reviews)</span>
+            </div>
+            <span class="gym-card-action">View →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="gym-card">
+        <div class="gym-card-photo">
+          <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=640&q=75" alt="10th Planet Miami" loading="lazy">
+          <div class="gym-card-overlay"></div>
+          <div class="gym-card-badges">
+            <span class="badge badge-verified" style="font-size:0.7rem">✓ Verified</span>
+          </div>
+        </div>
+        <div class="gym-card-body">
+          <div class="gym-card-name">10th Planet Miami</div>
+          <div class="gym-card-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Miami, FL
+          </div>
+          <div class="gym-card-programs">
+            <span class="badge badge-program">No-Gi</span>
+            <span class="badge badge-program">MMA</span>
+          </div>
+          <div class="gym-card-meta">
+            <div class="gym-card-rating">
+              <span class="stars">★★★★½</span>
+              <strong>4.7</strong>
+              <span>(77 reviews)</span>
+            </div>
+            <span class="gym-card-action">View →</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- Browse by state -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <p class="section-eyebrow">Browse by Location</p>
+        <h2>Top States</h2>
+      </div>
+      <a href="state.html" class="btn btn-ghost btn-sm">All 50 States →</a>
+    </div>
+    <div class="top-states">
+      <div class="hscroll">
+        <a href="state.html" class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🤠</div>
+          <div class="state-card-name">Texas</div>
+          <div class="state-card-count">512 gyms</div>
+        </a>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🌴</div>
+          <div class="state-card-name">California</div>
+          <div class="state-card-count">940 gyms</div>
+        </div>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🌊</div>
+          <div class="state-card-name">Florida</div>
+          <div class="state-card-count">680 gyms</div>
+        </div>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🗽</div>
+          <div class="state-card-name">New York</div>
+          <div class="state-card-count">490 gyms</div>
+        </div>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🌃</div>
+          <div class="state-card-name">Illinois</div>
+          <div class="state-card-count">312 gyms</div>
+        </div>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🎸</div>
+          <div class="state-card-name">Tennessee</div>
+          <div class="state-card-count">248 gyms</div>
+        </div>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🏔️</div>
+          <div class="state-card-name">Colorado</div>
+          <div class="state-card-count">290 gyms</div>
+        </div>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🌞</div>
+          <div class="state-card-name">Arizona</div>
+          <div class="state-card-count">278 gyms</div>
+        </div>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🏙️</div>
+          <div class="state-card-name">Georgia</div>
+          <div class="state-card-count">260 gyms</div>
+        </div>
+        <div class="state-card">
+          <div style="font-size:1.8rem;margin-bottom:6px">🎰</div>
+          <div class="state-card-name">Nevada</div>
+          <div class="state-card-count">195 gyms</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Popular cities -->
+<section class="section-sm" style="background: var(--bg-tint);">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <p class="section-eyebrow">Most Searched</p>
+        <h2>Popular Cities</h2>
+      </div>
+    </div>
+    <div class="popular-cities">
+      <a href="city.html" class="city-card">
+        <div class="city-card-icon">🤠</div>
+        <div class="city-card-info">
+          <div class="city-card-name">Austin, TX</div>
+          <div class="city-card-count">58 gyms</div>
+        </div>
+        <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      <div class="city-card">
+        <div class="city-card-icon">🌴</div>
+        <div class="city-card-info">
+          <div class="city-card-name">Los Angeles, CA</div>
+          <div class="city-card-count">112 gyms</div>
+        </div>
+        <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="city-card">
+        <div class="city-card-icon">🌊</div>
+        <div class="city-card-info">
+          <div class="city-card-name">Miami, FL</div>
+          <div class="city-card-count">74 gyms</div>
+        </div>
+        <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="city-card">
+        <div class="city-card-icon">🗽</div>
+        <div class="city-card-info">
+          <div class="city-card-name">New York, NY</div>
+          <div class="city-card-count">96 gyms</div>
+        </div>
+        <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="city-card">
+        <div class="city-card-icon">🌃</div>
+        <div class="city-card-info">
+          <div class="city-card-name">Chicago, IL</div>
+          <div class="city-card-count">65 gyms</div>
+        </div>
+        <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="city-card">
+        <div class="city-card-icon">🏔️</div>
+        <div class="city-card-info">
+          <div class="city-card-name">Denver, CO</div>
+          <div class="city-card-count">42 gyms</div>
+        </div>
+        <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section">
+  <div class="container-narrow">
+    <div style="text-align:center; margin-bottom: clamp(32px, 4vw, 56px)">
+      <p class="section-eyebrow">Simple Process</p>
+      <h2>Finding your gym takes 60 seconds</h2>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">01</div>
+        <div>
+          <h3 style="margin-bottom:6px">Search your city</h3>
+          <p>Enter your location or let us use your current coordinates. Filter by program, belt level, or class schedule.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">02</div>
+        <div>
+          <h3 style="margin-bottom:6px">Browse verified profiles</h3>
+          <p>Every listing includes photos, instructor bios, program details, schedules, and real reviews from students.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">03</div>
+        <div>
+          <h3 style="margin-bottom:6px">Visit &amp; start training</h3>
+          <p>Most academies offer a free first class. Contact the gym directly — no booking fees, no intermediary.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA band -->
+<section style="background: var(--navy); padding: clamp(48px, 6vw, 80px) 0;">
+  <div class="container" style="text-align:center">
+    <p style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:12px">Gym Owners</p>
+    <h2 style="color:white; margin-bottom:16px">Is your academy on MatMade?</h2>
+    <p style="color:oklch(70% 0.025 258); max-width:480px; margin: 0 auto 32px; font-size:1rem">Join 8,400+ academies already listed. Free profiles, verified badges, and a direct line to students searching for a gym like yours.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary btn-lg">Add Your Gym — It's Free</button>
+      <button class="btn btn-outline btn-lg" style="color:white;border-color:oklch(45% 0.05 258)">Learn More</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">mat<span>made</span></div>
+        <p class="footer-desc">The world's largest BJJ and martial arts gym directory. Built for the community, by people who train.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="#">Find Gyms</a></li>
+          <li><a href="#">Browse by State</a></li>
+          <li><a href="#">Browse by City</a></li>
+          <li><a href="#">Top Rated</a></li>
+          <li><a href="#">Instructors</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Content</div>
+        <ul class="footer-links">
+          <li><a href="#">The Show</a></li>
+          <li><a href="#">Stories</a></li>
+          <li><a href="#">Interviews</a></li>
+          <li><a href="#">Competition Calendar</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Add Your Gym</a></li>
+          <li><a href="#">Advertise</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MatMade. All rights reserved.</span>
+      <span>The #1 BJJ gym directory in the world.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile nav -->
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav-inner">
+    <div class="mobile-nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </div>
+    <a href="city.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </a>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      Map
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </div>
+  </div>
+</nav>
+
+<script src="js/app.js"></script>
+</body>
+</html>

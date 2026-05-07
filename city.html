@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BJJ &amp; Martial Arts Gyms in Austin, TX — MatMade</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    .city-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0 0;
+    }
+    .city-header-top {
+      padding: 0 clamp(16px, 4vw, 40px);
+      max-width: 1320px; margin: 0 auto;
+    }
+    .city-meta-row {
+      display: flex; align-items: center; gap: 16px;
+      margin: 8px 0 16px; flex-wrap: wrap;
+    }
+    .city-stat { display: flex; align-items: center; gap: 5px; font-size: 0.875rem; color: var(--text-mid); }
+    .city-stat strong { color: var(--text); font-weight: 700; }
+
+    .city-body {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+    @media (max-width: 960px) {
+      .city-body { grid-template-columns: 1fr; height: auto; overflow: visible; }
+    }
+
+    .city-list-panel {
+      display: flex; flex-direction: column;
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .city-list-filters {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .city-list-meta {
+      padding: 10px 16px 6px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.825rem; color: var(--text-mid);
+      flex-shrink: 0;
+    }
+    .city-list-scroll {
+      flex: 1; overflow-y: auto;
+      padding: 8px 12px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .city-list-scroll::-webkit-scrollbar { width: 4px; }
+    .city-list-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .city-map-panel {
+      position: relative;
+    }
+    #map { width: 100%; height: 100%; min-height: 400px; }
+    @media (max-width: 960px) {
+      .city-map-panel { display: none; height: 55vw; min-height: 280px; max-height: 420px; }
+      .city-map-panel.show { display: block; }
+      .city-list-panel { border-right: none; }
+      .city-list-scroll { max-height: none; overflow: visible; }
+    }
+
+    .list-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--navy); color: white;
+      font-size: 0.7rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .list-card-inner {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px;
+    }
+    .list-thumb {
+      width: 80px; height: 72px; border-radius: var(--r-sm);
+      overflow: hidden; flex-shrink: 0; background: var(--border);
+    }
+    .list-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .list-info { flex: 1; min-width: 0; }
+    .list-name { font-weight: 700; font-size: 0.875rem; color: var(--text); line-height: 1.3; }
+    .list-addr { font-size: 0.75rem; color: var(--text-dim); margin: 2px 0 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .list-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 5px; }
+    .list-bottom { display: flex; align-items: center; justify-content: space-between; }
+    .list-rating { display: flex; align-items: center; gap: 4px; font-size: 0.775rem; }
+    .list-rating .stars { font-size: 0.65rem; }
+    .list-rating strong { color: var(--text); }
+
+    /* Leaflet custom marker */
+    .map-pin {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--navy); color: white;
+      font-size: 0.65rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      border: 2.5px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+    .map-pin.active { background: var(--red); transform: scale(1.15); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">mat<span>made</span></a>
+    <div class="nav-search">
+      <input type="text" value="Austin, TX" aria-label="Search location">
+      <svg class="nav-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">Find Gyms</a>
+      <a href="#" class="nav-link">The Show</a>
+      <a href="#" class="btn btn-outline btn-sm" style="border-radius:999px">Add Your Gym</a>
+    </div>
+  </div>
+</nav>
+
+<!-- City header -->
+<div class="city-header">
+  <div class="city-header-top">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="state.html">Texas</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>Austin</span>
+    </div>
+    <h1 style="font-size:clamp(1.4rem,2.5vw,2rem)">BJJ &amp; Martial Arts in Austin, TX</h1>
+    <div class="city-meta-row">
+      <div class="city-stat">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <strong>58</strong> academies
+      </div>
+      <div class="city-stat">
+        <span class="stars" style="font-size:0.75rem">★</span>
+        Avg rating <strong>4.7</strong>
+      </div>
+      <div class="city-stat">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Most open 6am–9pm
+      </div>
+    </div>
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <div class="tab active" data-tab="all">All Gyms</div>
+      <div class="tab" data-tab="bjj">BJJ / No-Gi</div>
+      <div class="tab" data-tab="mma">MMA</div>
+      <div class="tab" data-tab="muay">Muay Thai</div>
+      <div class="tab" data-tab="kids">Kids Programs</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main split layout -->
+<div class="city-body">
+
+  <!-- Left: list panel -->
+  <div class="city-list-panel">
+    <div class="city-list-filters">
+      <div class="filter-bar">
+        <button class="filter-chip active" data-toggle>Open Now</button>
+        <button class="filter-chip" data-toggle>BJJ</button>
+        <button class="filter-chip" data-toggle>No-Gi</button>
+        <button class="filter-chip" data-toggle>MMA</button>
+        <button class="filter-chip" data-toggle>Competition</button>
+        <button class="filter-chip" data-toggle>Kids</button>
+        <button class="filter-chip" data-toggle>4.5★+</button>
+      </div>
+    </div>
+    <div class="city-list-meta">
+      <span>58 gyms in Austin, TX</span>
+      <select style="font-size:0.775rem;border:1px solid var(--border);border-radius:var(--r-xs);padding:3px 6px;background:var(--surface);color:var(--text);font-family:var(--font-body);outline:none" aria-label="Sort results">
+        <option>Top Rated</option>
+        <option>Distance</option>
+        <option>Most Reviews</option>
+      </select>
+    </div>
+    <div class="city-list-scroll">
+
+      <!-- Gym 1 -->
+      <div class="list-card active" onclick="location.href='gym.html'">
+        <div class="list-card-inner">
+          <div class="list-num">1</div>
+          <div class="list-thumb">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=160&q=70" alt="Gracie Barra Austin" loading="lazy">
+          </div>
+          <div class="list-info">
+            <div class="list-name">Gracie Barra Austin</div>
+            <div class="list-addr">2601 S Lamar Blvd · 1.2 mi</div>
+            <div class="list-tags">
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">BJJ</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">No-Gi</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">Kids</span>
+            </div>
+            <div class="list-bottom">
+              <div class="list-rating">
+                <span class="stars">★★★★★</span>
+                <strong>4.9</strong>
+                <span style="color:var(--text-dim)">(142)</span>
+              </div>
+              <span class="badge badge-open" style="font-size:0.7rem">Open</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gym 2 -->
+      <div class="list-card">
+        <div class="list-card-inner">
+          <div class="list-num">2</div>
+          <div class="list-thumb">
+            <img src="https://images.unsplash.com/photo-1555597673-b21d5c935865?w=160&q=70" alt="Atos Austin" loading="lazy">
+          </div>
+          <div class="list-info">
+            <div class="list-name">Atos Jiu-Jitsu Austin</div>
+            <div class="list-addr">4920 Burnet Rd · 2.4 mi</div>
+            <div class="list-tags">
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">BJJ</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">Competition</span>
+            </div>
+            <div class="list-bottom">
+              <div class="list-rating">
+                <span class="stars">★★★★★</span>
+                <strong>4.8</strong>
+                <span style="color:var(--text-dim)">(88)</span>
+              </div>
+              <span class="badge badge-open" style="font-size:0.7rem">Open</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gym 3 -->
+      <div class="list-card">
+        <div class="list-card-inner">
+          <div class="list-num">3</div>
+          <div class="list-thumb">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=160&q=70" alt="10th Planet Austin" loading="lazy">
+          </div>
+          <div class="list-info">
+            <div class="list-name">10th Planet Austin</div>
+            <div class="list-addr">811 E 6th St · 0.8 mi</div>
+            <div class="list-tags">
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">No-Gi</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">MMA</span>
+            </div>
+            <div class="list-bottom">
+              <div class="list-rating">
+                <span class="stars">★★★★½</span>
+                <strong>4.6</strong>
+                <span style="color:var(--text-dim)">(51)</span>
+              </div>
+              <span class="badge badge-closed" style="font-size:0.7rem">Closed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gym 4 -->
+      <div class="list-card">
+        <div class="list-card-inner">
+          <div class="list-num">4</div>
+          <div class="list-thumb">
+            <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=160&q=70" alt="Alliance Jiu-Jitsu" loading="lazy">
+          </div>
+          <div class="list-info">
+            <div class="list-name">Alliance Jiu-Jitsu Texas</div>
+            <div class="list-addr">1100 S Congress Ave · 1.9 mi</div>
+            <div class="list-tags">
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">BJJ</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">MMA</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">Kids</span>
+            </div>
+            <div class="list-bottom">
+              <div class="list-rating">
+                <span class="stars">★★★★½</span>
+                <strong>4.7</strong>
+                <span style="color:var(--text-dim)">(64)</span>
+              </div>
+              <span class="badge badge-open" style="font-size:0.7rem">Open</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gym 5 -->
+      <div class="list-card">
+        <div class="list-card-inner">
+          <div class="list-num">5</div>
+          <div class="list-thumb">
+            <img src="https://images.unsplash.com/photo-1546483875-ad9014c88eba?w=160&q=70" alt="Austin Muay Thai" loading="lazy">
+          </div>
+          <div class="list-info">
+            <div class="list-name">Austin Muay Thai &amp; BJJ</div>
+            <div class="list-addr">5501 N Lamar Blvd · 3.1 mi</div>
+            <div class="list-tags">
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">Muay Thai</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">BJJ</span>
+            </div>
+            <div class="list-bottom">
+              <div class="list-rating">
+                <span class="stars">★★★★</span>
+                <strong>4.4</strong>
+                <span style="color:var(--text-dim)">(37)</span>
+              </div>
+              <span class="badge badge-open" style="font-size:0.7rem">Open</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gym 6 -->
+      <div class="list-card">
+        <div class="list-card-inner">
+          <div class="list-num">6</div>
+          <div class="list-thumb">
+            <img src="https://images.unsplash.com/photo-1517438476312-10d79c077509?w=160&q=70" alt="Texas Black Belt Academy" loading="lazy">
+          </div>
+          <div class="list-info">
+            <div class="list-name">Texas Black Belt Academy</div>
+            <div class="list-addr">7320 McNeil Dr · 4.5 mi</div>
+            <div class="list-tags">
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">BJJ</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">Kids</span>
+              <span class="badge badge-program" style="font-size:0.68rem;padding:2px 7px">Self-Defense</span>
+            </div>
+            <div class="list-bottom">
+              <div class="list-rating">
+                <span class="stars">★★★★½</span>
+                <strong>4.5</strong>
+                <span style="color:var(--text-dim)">(29)</span>
+              </div>
+              <span class="badge badge-open" style="font-size:0.7rem">Open</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Load more -->
+      <button class="btn btn-outline" style="width:100%;justify-content:center;margin-top:4px">
+        Show 52 more gyms
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Right: map -->
+  <div class="city-map-panel" id="city-map-panel">
+    <div id="map"></div>
+  </div>
+
+</div>
+
+<!-- Mobile map toggle -->
+<button class="map-toggle" id="map-toggle" aria-label="Toggle map view">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+  Map View
+</button>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <div class="mobile-nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      Map
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </div>
+  </div>
+</nav>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/app.js"></script>
+<script>
+const gyms = [
+  { id: 1, name: "Gracie Barra Austin",     lat: 30.2495, lng: -97.7659, rating: 4.9 },
+  { id: 2, name: "Atos Jiu-Jitsu Austin",   lat: 30.3098, lng: -97.7353, rating: 4.8 },
+  { id: 3, name: "10th Planet Austin",      lat: 30.2630, lng: -97.7282, rating: 4.6 },
+  { id: 4, name: "Alliance Jiu-Jitsu TX",   lat: 30.2501, lng: -97.7500, rating: 4.7 },
+  { id: 5, name: "Austin Muay Thai & BJJ",  lat: 30.3180, lng: -97.7420, rating: 4.4 },
+  { id: 6, name: "Texas Black Belt Academy",lat: 30.4051, lng: -97.7542, rating: 4.5 },
+];
+
+const map = L.map('map', { zoomControl: true }).setView([30.2900, -97.7450], 12);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+const markers = [];
+gyms.forEach((gym, i) => {
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="width:30px;height:30px;border-radius:50%;background:#162a6e;color:white;font-size:0.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2.5px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer">${i+1}</div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+  });
+  const marker = L.marker([gym.lat, gym.lng], { icon }).addTo(map);
+  marker.bindPopup(`<strong style="font-family:sans-serif">${gym.name}</strong><br><span style="font-size:0.8rem">★ ${gym.rating}</span>`);
+  markers.push(marker);
+});
+
+// Sync list card clicks to map markers
+document.querySelectorAll('.list-card').forEach((card, i) => {
+  card.addEventListener('click', () => {
+    if (markers[i]) {
+      map.setView([gyms[i].lat, gyms[i].lng], 14, { animate: true });
+      markers[i].openPopup();
+    }
+  });
+});
+</script>
+</body>
+</html>

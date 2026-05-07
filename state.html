@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BJJ &amp; Martial Arts Gyms in Texas — MatMade</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .state-hero {
+      background: var(--navy);
+      padding: clamp(32px, 5vw, 64px) 0;
+    }
+    .state-hero h1 { color: white; margin-bottom: 8px; }
+    .state-hero-sub { color: oklch(70% 0.03 258); font-size: 1rem; }
+    .state-hero-stats {
+      display: flex; gap: 32px; flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .state-hero-stat-val {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.75rem; color: white; letter-spacing: -0.03em;
+    }
+    .state-hero-stat-val span { color: var(--red); }
+    .state-hero-stat-label { font-size: 0.8rem; color: oklch(60% 0.03 258); margin-top: 2px; }
+
+    .state-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 40px;
+      align-items: start;
+      padding-top: 40px;
+    }
+    @media (max-width: 800px) { .state-layout { grid-template-columns: 1fr; } }
+
+    .sidebar-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      position: sticky; top: 80px;
+    }
+    .sidebar-block-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700; font-size: 0.85rem;
+      color: var(--text);
+    }
+    .sidebar-program-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem; cursor: pointer;
+      transition: background 0.1s;
+    }
+    .sidebar-program-item:last-child { border-bottom: none; }
+    .sidebar-program-item:hover { background: var(--bg); }
+    .sidebar-program-item input[type=checkbox] { accent-color: var(--navy); }
+    .sidebar-count { font-size: 0.75rem; color: var(--text-dim); }
+
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .results-count { font-size: 0.9rem; color: var(--text-mid); }
+    .results-count strong { color: var(--text); }
+
+    .gym-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .gym-list-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      cursor: pointer;
+      transition: all 0.15s var(--ease-out);
+    }
+    .gym-list-card:hover { border-color: var(--navy-soft); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    @media (max-width: 540px) { .gym-list-card { grid-template-columns: 1fr; } }
+    .gym-list-photo { overflow: hidden; background: var(--border); }
+    .gym-list-photo img { width: 100%; height: 100%; object-fit: cover; min-height: 140px; }
+    .gym-list-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 8px; }
+    .gym-list-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .gym-list-name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--text); }
+    .gym-list-location { font-size: 0.825rem; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
+    .gym-list-programs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .gym-list-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+
+    .cities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">mat<span>made</span></a>
+    <div class="nav-search">
+      <input type="text" placeholder="Search in Texas…" aria-label="Search gyms">
+      <svg class="nav-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">Find Gyms</a>
+      <a href="#" class="nav-link">The Show</a>
+      <a href="#" class="btn btn-outline btn-sm" style="border-radius:999px">Add Your Gym</a>
+    </div>
+  </div>
+</nav>
+
+<!-- State hero -->
+<div class="state-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>Texas</span>
+    </div>
+    <h1>Texas 🤠</h1>
+    <p class="state-hero-sub">BJJ, MMA &amp; Martial Arts Academies across the Lone Star State</p>
+    <div class="state-hero-stats">
+      <div>
+        <div class="state-hero-stat-val"><span>512</span></div>
+        <div class="state-hero-stat-label">Academies</div>
+      </div>
+      <div>
+        <div class="state-hero-stat-val"><span>87</span></div>
+        <div class="state-hero-stat-label">Cities</div>
+      </div>
+      <div>
+        <div class="state-hero-stat-val"><span>4.6</span>★</div>
+        <div class="state-hero-stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div style="background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 0; position: sticky; top: 60px; z-index: 100;">
+  <div class="container">
+    <div class="filter-bar">
+      <button class="filter-chip active" data-toggle>All Programs</button>
+      <button class="filter-chip" data-toggle>BJJ</button>
+      <button class="filter-chip" data-toggle>No-Gi</button>
+      <button class="filter-chip" data-toggle>MMA</button>
+      <button class="filter-chip" data-toggle>Muay Thai</button>
+      <button class="filter-chip" data-toggle>Wrestling</button>
+      <button class="filter-chip" data-toggle>Kids Classes</button>
+      <button class="filter-chip" data-toggle>Competition Team</button>
+      <button class="filter-chip" data-toggle>Open Mat</button>
+    </div>
+  </div>
+</div>
+
+<!-- State content -->
+<div class="container">
+  <div class="state-layout">
+
+    <!-- Sidebar -->
+    <aside>
+      <div class="sidebar-block mb-6">
+        <div class="sidebar-block-header">Top Cities</div>
+        <a href="city.html" style="text-decoration:none">
+          <div class="sidebar-program-item">
+            <span>Austin</span>
+            <span class="sidebar-count">58 gyms</span>
+          </div>
+        </a>
+        <div class="sidebar-program-item">
+          <span>Houston</span>
+          <span class="sidebar-count">96 gyms</span>
+        </div>
+        <div class="sidebar-program-item">
+          <span>Dallas</span>
+          <span class="sidebar-count">82 gyms</span>
+        </div>
+        <div class="sidebar-program-item">
+          <span>San Antonio</span>
+          <span class="sidebar-count">54 gyms</span>
+        </div>
+        <div class="sidebar-program-item">
+          <span>Fort Worth</span>
+          <span class="sidebar-count">38 gyms</span>
+        </div>
+        <div class="sidebar-program-item">
+          <span>El Paso</span>
+          <span class="sidebar-count">22 gyms</span>
+        </div>
+        <div class="sidebar-program-item">
+          <span>Plano</span>
+          <span class="sidebar-count">18 gyms</span>
+        </div>
+        <div class="sidebar-program-item" style="color:var(--navy-soft); font-size:0.8rem; font-weight:600">
+          View all 87 cities →
+        </div>
+      </div>
+
+      <div class="sidebar-block">
+        <div class="sidebar-block-header">Filter by Program</div>
+        <label class="sidebar-program-item" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" checked> BJJ (Gi)
+          </div>
+          <span class="sidebar-count">420</span>
+        </label>
+        <label class="sidebar-program-item" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" checked> No-Gi / Submission
+          </div>
+          <span class="sidebar-count">380</span>
+        </label>
+        <label class="sidebar-program-item" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox"> MMA
+          </div>
+          <span class="sidebar-count">210</span>
+        </label>
+        <label class="sidebar-program-item" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox"> Muay Thai
+          </div>
+          <span class="sidebar-count">195</span>
+        </label>
+        <label class="sidebar-program-item" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox"> Kids Programs
+          </div>
+          <span class="sidebar-count">310</span>
+        </label>
+        <label class="sidebar-program-item" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox"> Competition Team
+          </div>
+          <span class="sidebar-count">140</span>
+        </label>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main>
+      <div class="results-header">
+        <p class="results-count">Showing <strong>512</strong> academies in Texas</p>
+        <select style="padding:7px 12px; border-radius:var(--r-sm); border:1.5px solid var(--border); font-family:var(--font-body); font-size:0.875rem; color:var(--text); background:var(--surface); outline:none; cursor:pointer" aria-label="Sort by">
+          <option>Sort: Top Rated</option>
+          <option>Sort: Most Reviewed</option>
+          <option>Sort: Nearest</option>
+          <option>Sort: Newest</option>
+        </select>
+      </div>
+
+      <div class="gym-list">
+        <!-- Card 1 -->
+        <article class="gym-list-card" onclick="location.href='gym.html'">
+          <div class="gym-list-photo">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=75" alt="Gracie Barra Austin" loading="lazy">
+          </div>
+          <div class="gym-list-body">
+            <div class="gym-list-top">
+              <div>
+                <div class="gym-list-name">Gracie Barra Austin</div>
+                <div class="gym-list-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  2601 S Lamar Blvd, Austin, TX
+                </div>
+              </div>
+              <span class="badge badge-verified" style="font-size:0.7rem;flex-shrink:0">✓ Verified</span>
+            </div>
+            <div class="gym-list-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">Kids</span>
+              <span class="badge badge-program">Women's Only</span>
+            </div>
+            <p style="font-size:0.85rem;line-height:1.6; color:var(--text-mid)">World-class BJJ instruction for all levels. Professor Carlos Gracie Jr.'s flagship curriculum. Mon–Sat classes, morning and evening.</p>
+            <div class="gym-list-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.9rem">★★★★★</span>
+                <span class="score" style="font-size:1rem">4.9</span>
+                <span class="count">(142)</span>
+              </div>
+              <span class="badge badge-open">Open Now</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="gym-list-card">
+          <div class="gym-list-photo">
+            <img src="https://images.unsplash.com/photo-1555597673-b21d5c935865?w=400&q=75" alt="Atos Austin" loading="lazy">
+          </div>
+          <div class="gym-list-body">
+            <div class="gym-list-top">
+              <div>
+                <div class="gym-list-name">Atos Jiu-Jitsu Austin</div>
+                <div class="gym-list-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  4920 Burnet Rd, Austin, TX
+                </div>
+              </div>
+              <span class="badge badge-verified" style="font-size:0.7rem;flex-shrink:0">✓ Verified</span>
+            </div>
+            <div class="gym-list-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">Competition</span>
+            </div>
+            <p style="font-size:0.85rem;line-height:1.6; color:var(--text-mid)">Home of world champion instructors. Competition-focused training with elite-level fundamentals. All levels welcome.</p>
+            <div class="gym-list-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.9rem">★★★★★</span>
+                <span class="score" style="font-size:1rem">4.8</span>
+                <span class="count">(88)</span>
+              </div>
+              <span class="badge badge-open">Open Now</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="gym-list-card">
+          <div class="gym-list-photo">
+            <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=400&q=75" alt="Alliance Texas" loading="lazy">
+          </div>
+          <div class="gym-list-body">
+            <div class="gym-list-top">
+              <div>
+                <div class="gym-list-name">Alliance Jiu-Jitsu Texas</div>
+                <div class="gym-list-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  1100 S Congress Ave, Austin, TX
+                </div>
+              </div>
+            </div>
+            <div class="gym-list-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">MMA</span>
+              <span class="badge badge-program">Kids</span>
+            </div>
+            <p style="font-size:0.85rem;line-height:1.6; color:var(--text-mid)">Beginner-friendly academy with a strong competition pedigree. Structured curriculum from white belt to black belt.</p>
+            <div class="gym-list-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.9rem">★★★★½</span>
+                <span class="score" style="font-size:1rem">4.7</span>
+                <span class="count">(64)</span>
+              </div>
+              <span class="badge badge-closed">Closed · Opens 6am</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="gym-list-card">
+          <div class="gym-list-photo">
+            <img src="https://images.unsplash.com/photo-1546483875-ad9014c88eba?w=400&q=75" alt="10th Planet Austin" loading="lazy">
+          </div>
+          <div class="gym-list-body">
+            <div class="gym-list-top">
+              <div>
+                <div class="gym-list-name">10th Planet Austin</div>
+                <div class="gym-list-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  811 E 6th St, Austin, TX
+                </div>
+              </div>
+            </div>
+            <div class="gym-list-programs">
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">Rubber Guard</span>
+              <span class="badge badge-program">MMA</span>
+            </div>
+            <p style="font-size:0.85rem;line-height:1.6; color:var(--text-mid)">Eddie Bravo's innovative no-gi system. Heavy focus on leg locks and rubber guard. Unique training methodology for grapplers of all backgrounds.</p>
+            <div class="gym-list-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.9rem">★★★★½</span>
+                <span class="score" style="font-size:1rem">4.6</span>
+                <span class="count">(51)</span>
+              </div>
+              <span class="badge badge-open">Open Now</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Load more -->
+      <div style="text-align:center; margin-top:32px">
+        <button class="btn btn-outline" style="padding:12px 40px">Load More Gyms</button>
+      </div>
+
+      <!-- Top cities in Texas -->
+      <section class="section-sm">
+        <h3 style="margin-bottom:20px">Browse by City in Texas</h3>
+        <div class="cities-grid">
+          <a href="city.html" class="city-card" style="text-decoration:none">
+            <div class="city-card-icon">🤠</div>
+            <div class="city-card-info">
+              <div class="city-card-name">Austin</div>
+              <div class="city-card-count">58 gyms</div>
+            </div>
+            <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+          <div class="city-card">
+            <div class="city-card-icon">🏙️</div>
+            <div class="city-card-info">
+              <div class="city-card-name">Houston</div>
+              <div class="city-card-count">96 gyms</div>
+            </div>
+            <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="city-card">
+            <div class="city-card-icon">⭐</div>
+            <div class="city-card-info">
+              <div class="city-card-name">Dallas</div>
+              <div class="city-card-count">82 gyms</div>
+            </div>
+            <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="city-card">
+            <div class="city-card-icon">🌮</div>
+            <div class="city-card-info">
+              <div class="city-card-name">San Antonio</div>
+              <div class="city-card-count">54 gyms</div>
+            </div>
+            <svg class="city-card-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">mat<span>made</span></div>
+        <p class="footer-desc">The world's largest BJJ and martial arts gym directory.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="#">Find Gyms</a></li>
+          <li><a href="#">Browse by State</a></li>
+          <li><a href="#">Browse by City</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Content</div>
+        <ul class="footer-links">
+          <li><a href="#">The Show</a></li>
+          <li><a href="#">Stories</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Add Your Gym</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MatMade. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <div class="mobile-nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      Map
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </div>
+  </div>
+</nav>
+
+<script src="js/app.js"></script>
+</body>
+</html>
