@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — MatMade for Gym Owners</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Athletic editorial pricing — clean hierarchy, red accent on featured tier */
+
+    .pricing-hero {
+      background: var(--navy);
+      padding: clamp(48px, 6vw, 80px) 0 clamp(32px, 4vw, 52px);
+      text-align: center;
+    }
+    .pricing-hero-eyebrow { color: var(--red); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+    .pricing-hero h1 { color: white; margin-bottom: 14px; }
+    .pricing-hero p { color: oklch(68% 0.025 258); font-size: 1.05rem; max-width: 520px; margin: 0 auto 32px; line-height: 1.65; }
+
+    /* Toggle */
+    .billing-toggle {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: oklch(16% 0.06 258);
+      border: 1px solid oklch(30% 0.06 258);
+      border-radius: 999px;
+      padding: 6px 6px 6px 16px;
+    }
+    .billing-label { font-size: 0.875rem; color: oklch(72% 0.025 258); }
+    .billing-label.active { color: white; font-weight: 600; }
+    .billing-slider {
+      background: oklch(25% 0.07 258);
+      border-radius: 999px;
+      padding: 4px;
+      display: flex; gap: 2px;
+    }
+    .billing-opt {
+      padding: 6px 16px; border-radius: 999px;
+      font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+      color: oklch(60% 0.03 258);
+    }
+    .billing-opt.active { background: white; color: var(--navy); }
+    .billing-save {
+      background: oklch(52% 0.16 150); color: white;
+      font-size: 0.7rem; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+    }
+
+    /* Pricing grid */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: start;
+      padding: clamp(32px, 4vw, 56px) 0;
+    }
+    @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; } }
+
+    .tier-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+      transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+    }
+    .tier-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .tier-card.featured {
+      border-color: var(--red);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px oklch(50% 0.22 23 / 0.18), var(--shadow-lg);
+    }
+    .tier-card.featured:hover { transform: translateY(-12px); }
+
+    .tier-header { padding: 28px 28px 20px; position: relative; }
+    .tier-badge {
+      display: inline-flex; align-items: center;
+      background: var(--red); color: white;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    .tier-name {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.35rem; color: var(--text); margin-bottom: 6px;
+    }
+    .tier-desc { font-size: 0.875rem; color: var(--text-mid); line-height: 1.55; }
+
+    .tier-price { padding: 20px 28px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg); }
+    .tier-price-amount {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 2.75rem; color: var(--text); letter-spacing: -0.04em; line-height: 1;
+    }
+    .tier-price-amount sup { font-size: 1.25rem; vertical-align: top; margin-top: 6px; font-weight: 700; }
+    .tier-price-amount .period { font-size: 1rem; font-weight: 500; color: var(--text-dim); letter-spacing: 0; }
+    .tier-price-note { font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; }
+    .tier-price-annual { font-size: 0.8rem; color: oklch(42% 0.14 150); font-weight: 600; margin-top: 6px; }
+
+    .tier-features { padding: 20px 28px; }
+    .feature-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 7px 0; font-size: 0.875rem; color: var(--text-mid);
+    }
+    .feature-check {
+      width: 18px; height: 18px; border-radius: 50%;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+    .feature-check.yes { background: oklch(52% 0.16 150 / 0.12); color: oklch(38% 0.14 150); }
+    .feature-check.no { background: var(--bg-tint); color: var(--border-mid); }
+
+    .tier-cta { padding: 0 28px 28px; }
+    .tier-cta .btn { width: 100%; justify-content: center; }
+
+    /* Comparison table */
+    .compare-table {
+      width: 100%; border-collapse: collapse;
+      margin-top: 8px;
+    }
+    .compare-table th, .compare-table td {
+      padding: 12px 20px; text-align: left; font-size: 0.875rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .compare-table th {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-dim);
+      background: var(--bg-tint);
+    }
+    .compare-table th.featured-col { color: var(--red); background: oklch(97% 0.01 23); }
+    .compare-table td:not(:first-child) { text-align: center; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: var(--bg); }
+    .check-yes { color: oklch(38% 0.14 150); font-size: 1.1rem; }
+    .check-no  { color: var(--border-mid); font-size: 1.1rem; }
+
+    /* FAQ */
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-q {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 0; cursor: pointer; gap: 16px;
+      font-weight: 600; font-size: 0.95rem; color: var(--text);
+      transition: color 0.12s;
+    }
+    .faq-q:hover { color: var(--navy); }
+    .faq-icon { flex-shrink: 0; width: 22px; height: 22px; transition: transform 0.2s; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-a {
+      overflow: hidden;
+      display: grid; grid-template-rows: 0fr;
+      transition: grid-template-rows 0.25s var(--ease-out);
+    }
+    .faq-item.open .faq-a { grid-template-rows: 1fr; }
+    .faq-a-inner { overflow: hidden; padding-bottom: 18px; font-size: 0.9rem; color: var(--text-mid); line-height: 1.7; }
+
+    /* Social proof */
+    .quote-strip {
+      background: var(--bg-tint);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: clamp(32px, 4vw, 48px) 0;
+    }
+    .quote-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+    .quote-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; }
+    .quote-text { font-size: 0.9rem; color: var(--text-mid); line-height: 1.65; font-style: italic; margin-bottom: 16px; }
+    .quote-author { display: flex; align-items: center; gap: 10px; }
+    .quote-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--bg-tint); display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.9rem;
+      color: var(--navy-soft);
+    }
+    .quote-name { font-weight: 600; font-size: 0.875rem; color: var(--text); }
+    .quote-gym { font-size: 0.775rem; color: var(--text-dim); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">mat<span>made</span></a>
+    <div class="nav-search">
+      <input type="text" placeholder="City, state, or gym name…" aria-label="Search gyms">
+      <svg class="nav-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="nav-links">
+      <a href="search.html" class="nav-link">Find Gyms</a>
+      <a href="show.html" class="nav-link">The Show</a>
+      <a href="story.html" class="nav-link">Stories</a>
+      <a href="#" class="btn btn-outline btn-sm" style="border-radius:999px">Add Your Gym</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="pricing-hero">
+  <div class="container">
+    <p class="pricing-hero-eyebrow">Gym Owners</p>
+    <h1>Your gym deserves<br>to be found.</h1>
+    <p>8,400+ academies are already on MatMade. Every plan starts free. Upgrade when you're ready to stand out.</p>
+    <div class="billing-toggle" role="group" aria-label="Billing period">
+      <div class="billing-slider">
+        <div class="billing-opt active" id="monthly-btn" role="button" tabindex="0">Monthly</div>
+        <div class="billing-opt" id="annual-btn" role="button" tabindex="0">
+          Annual <span class="billing-save" style="margin-left:4px">Save 17%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pricing grid -->
+<div class="container">
+  <div class="pricing-grid">
+
+    <!-- Claimed (Free) -->
+    <div class="tier-card">
+      <div class="tier-header">
+        <div class="tier-name">Claimed</div>
+        <p class="tier-desc">Own your listing. Fix your info. Show up correctly on the world's largest BJJ directory.</p>
+      </div>
+      <div class="tier-price">
+        <div class="tier-price-amount">Free</div>
+        <div class="tier-price-note">Always free. No credit card required.</div>
+      </div>
+      <div class="tier-features">
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Correct address &amp; phone
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Update website &amp; email
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Set hours of operation
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          List your programs
+        </div>
+        <div class="feature-item" style="opacity:0.5">
+          <div class="feature-check no" aria-label="Not included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          Rich description &amp; content
+        </div>
+        <div class="feature-item" style="opacity:0.5">
+          <div class="feature-check no" aria-label="Not included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          Hero image &amp; photo gallery
+        </div>
+        <div class="feature-item" style="opacity:0.5">
+          <div class="feature-check no" aria-label="Not included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          Priority in search results
+        </div>
+      </div>
+      <div class="tier-cta">
+        <a href="#" class="btn btn-outline">Claim Your Listing</a>
+      </div>
+    </div>
+
+    <!-- Premium (featured) -->
+    <div class="tier-card featured" aria-label="Most popular plan">
+      <div class="tier-header">
+        <div class="tier-badge">Most Popular</div>
+        <div class="tier-name">Premium</div>
+        <p class="tier-desc">A real marketing page that converts browsers into members.</p>
+      </div>
+      <div class="tier-price">
+        <div class="tier-price-amount">
+          <sup>$</sup><span id="premium-price">29</span><span class="period">/mo</span>
+        </div>
+        <div class="tier-price-note" id="premium-note">Billed monthly. Cancel anytime.</div>
+        <div class="tier-price-annual" id="premium-annual" style="display:none">$290/yr — save $58 vs monthly</div>
+      </div>
+      <div class="tier-features">
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Everything in Claimed
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Rich gym description
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Hero image &amp; hero video
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Photo gallery
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          FAQ section
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Social media links
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Booking &amp; trial class URL
+        </div>
+        <div class="feature-item" style="opacity:0.5">
+          <div class="feature-check no" aria-label="Not included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          Instructor profiles
+        </div>
+        <div class="feature-item" style="opacity:0.5">
+          <div class="feature-check no" aria-label="Not included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          Priority in search results
+        </div>
+      </div>
+      <div class="tier-cta">
+        <a href="#" class="btn btn-primary">Start Premium</a>
+      </div>
+    </div>
+
+    <!-- Pro -->
+    <div class="tier-card">
+      <div class="tier-header">
+        <div class="tier-name">Pro</div>
+        <p class="tier-desc">Full brand presence. Priority in search. More students finding you every day.</p>
+      </div>
+      <div class="tier-price">
+        <div class="tier-price-amount">
+          <sup>$</sup><span id="pro-price">79</span><span class="period">/mo</span>
+        </div>
+        <div class="tier-price-note" id="pro-note">Billed monthly. Cancel anytime.</div>
+        <div class="tier-price-annual" id="pro-annual" style="display:none">$790/yr — save $158 vs monthly</div>
+      </div>
+      <div class="tier-features">
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Everything in Premium
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Instructor profiles
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Priority in search results
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Mat Made Certified badge
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Class schedule embed
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Analytics dashboard
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Monthly performance report
+        </div>
+        <div class="feature-item">
+          <div class="feature-check yes" aria-label="Included"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Dedicated account manager
+        </div>
+      </div>
+      <div class="tier-cta">
+        <a href="#" class="btn btn-navy">Start Pro</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Social proof quotes -->
+<div class="quote-strip">
+  <div class="container">
+    <p class="section-eyebrow" style="text-align:center;margin-bottom:24px">What Gym Owners Say</p>
+    <div class="quote-grid">
+      <div class="quote-card">
+        <p class="quote-text">"Three new students found us through MatMade within the first week of upgrading to Premium. The hero image made a huge difference."</p>
+        <div class="quote-author">
+          <div class="quote-avatar">CK</div>
+          <div>
+            <div class="quote-name">Carlos Kim</div>
+            <div class="quote-gym">Atos Austin · Head Instructor</div>
+          </div>
+        </div>
+      </div>
+      <div class="quote-card">
+        <p class="quote-text">"I was skeptical at first, but the MatMade Certified badge has become a real selling point when people ask why we're different from other gyms."</p>
+        <div class="quote-author">
+          <div class="quote-avatar">TR</div>
+          <div>
+            <div class="quote-name">Tasha Rodriguez</div>
+            <div class="quote-gym">Triangle BJJ · Owner</div>
+          </div>
+        </div>
+      </div>
+      <div class="quote-card">
+        <p class="quote-text">"The free plan alone is worth it — we had wrong information all over the internet. MatMade let us fix it in one place."</p>
+        <div class="quote-author">
+          <div class="quote-avatar">MJ</div>
+          <div>
+            <div class="quote-name">Mike Jenkins</div>
+            <div class="quote-gym">Pacific Coast Grappling · Co-Founder</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section class="section">
+  <div class="container-narrow">
+    <div style="text-align:center;margin-bottom:clamp(28px,3vw,44px)">
+      <p class="section-eyebrow">Common Questions</p>
+      <h2>Everything you need to know</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <div class="faq-q" role="button" tabindex="0">
+          What's the difference between Claimed and Premium?
+          <svg class="faq-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Claimed lets you own and correct your basic listing — address, phone, programs, hours. Premium turns your listing into a full marketing page: hero photo, photo gallery, rich description, FAQs, social links, and a booking URL. It's the difference between a yellow pages entry and an actual website.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" role="button" tabindex="0">
+          Do I need a credit card to get started?
+          <svg class="faq-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">No. Claiming your listing is completely free, forever. No credit card, no trial period, no catch. You'll only need to enter payment information if you decide to upgrade to Premium or Pro.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" role="button" tabindex="0">
+          What is Mat Made Certified?
+          <svg class="faq-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Mat Made Certified is our quality badge for gyms that meet our community standards — verified ownership, up-to-date listing information, and a commitment to student experience. It appears prominently on your listing and in search results. Available on Pro.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" role="button" tabindex="0">
+          Can I cancel anytime?
+          <svg class="faq-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Yes, you can cancel at any time from your account dashboard. When you cancel, your listing reverts to the Claimed (free) tier at the end of your billing period. Your basic information stays live — you just lose the premium features.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" role="button" tabindex="0">
+          Is my gym already on MatMade?
+          <svg class="faq-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Probably. We have 8,400+ gyms in the directory. Search for your gym name above. If it's there, you just need to claim it. If it's not there, you can add it for free in about 2 minutes.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">mat<span>made</span></div>
+        <p class="footer-desc">The world's largest BJJ and martial arts gym directory.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="search.html">Find Gyms</a></li>
+          <li><a href="state.html">Browse by State</a></li>
+          <li><a href="affiliation.html">Browse by Affiliation</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Content</div>
+        <ul class="footer-links">
+          <li><a href="show.html">The Show</a></li>
+          <li><a href="story.html">Stories</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="#">Add Your Gym</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MatMade. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="search.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </a>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      Map
+    </div>
+    <div class="mobile-nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Pricing
+    </div>
+  </div>
+</nav>
+
+<script src="js/app.js"></script>
+<script>
+  // Billing toggle
+  const monthlyBtn = document.getElementById('monthly-btn');
+  const annualBtn = document.getElementById('annual-btn');
+  const premiumPrice = document.getElementById('premium-price');
+  const premiumNote = document.getElementById('premium-note');
+  const premiumAnnual = document.getElementById('premium-annual');
+  const proPrice = document.getElementById('pro-price');
+  const proNote = document.getElementById('pro-note');
+  const proAnnual = document.getElementById('pro-annual');
+
+  function setMonthly() {
+    monthlyBtn.classList.add('active'); annualBtn.classList.remove('active');
+    premiumPrice.textContent = '29'; premiumNote.textContent = 'Billed monthly. Cancel anytime.';
+    premiumAnnual.style.display = 'none';
+    proPrice.textContent = '79'; proNote.textContent = 'Billed monthly. Cancel anytime.';
+    proAnnual.style.display = 'none';
+  }
+  function setAnnual() {
+    annualBtn.classList.add('active'); monthlyBtn.classList.remove('active');
+    premiumPrice.textContent = '24'; premiumNote.textContent = 'Billed annually ($290/yr).';
+    premiumAnnual.style.display = 'block';
+    proPrice.textContent = '66'; proNote.textContent = 'Billed annually ($790/yr).';
+    proAnnual.style.display = 'block';
+  }
+
+  monthlyBtn.addEventListener('click', setMonthly);
+  annualBtn.addEventListener('click', setAnnual);
+  monthlyBtn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') setMonthly(); });
+  annualBtn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') setAnnual(); });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+    q.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); q.click(); } });
+  });
+</script>
+</body>
+</html>

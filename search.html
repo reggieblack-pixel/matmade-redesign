@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find BJJ Gyms Near You — MatMade Search</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .search-hero {
+      background: var(--navy);
+      padding: clamp(24px, 3vw, 40px) 0;
+      border-bottom: 1px solid oklch(35% 0.06 258);
+    }
+    .search-hero h1 {
+      color: white;
+      font-size: clamp(1.4rem, 2vw + 0.5rem, 2rem);
+      margin-bottom: 16px;
+    }
+    .search-hero-bar {
+      display: flex; gap: 0;
+      max-width: 680px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px oklch(5% 0.05 258 / 0.4);
+    }
+    .search-hero-bar input {
+      flex: 1; padding: 14px 20px;
+      border: none; outline: none;
+      font-family: var(--font-body); font-size: 0.95rem;
+      color: var(--text);
+    }
+    .search-hero-bar input::placeholder { color: var(--text-dim); }
+    .search-hero-bar button {
+      padding: 0 28px; background: var(--red); color: white;
+      border: none; cursor: pointer; font-family: var(--font-display);
+      font-weight: 700; font-size: 0.9rem;
+      display: flex; align-items: center; gap: 8px;
+      transition: background 0.15s;
+    }
+    .search-hero-bar button:hover { background: var(--red-dim); }
+    .search-hint { color: oklch(65% 0.03 258); font-size: 0.8rem; margin-top: 10px; }
+    .search-hint a { color: var(--red-dim); text-decoration: underline; cursor: pointer; }
+
+    .search-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 32px;
+      align-items: start;
+      padding-top: 32px;
+      padding-bottom: 64px;
+    }
+    @media (max-width: 860px) { .search-layout { grid-template-columns: 1fr; } }
+
+    /* Filter panel */
+    .filter-panel {
+      position: sticky; top: 76px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+    }
+    .filter-panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .filter-panel-header h3 {
+      font-size: 0.875rem; font-weight: 700; color: var(--text);
+      letter-spacing: 0;
+    }
+    .filter-clear { font-size: 0.775rem; color: var(--red); cursor: pointer; font-weight: 600; }
+    .filter-clear:hover { text-decoration: underline; }
+    .filter-group {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-group:last-child { border-bottom: none; }
+    .filter-group-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.09em;
+      text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px;
+    }
+    .filter-check {
+      display: flex; align-items: center; gap: 10px;
+      padding: 5px 0; cursor: pointer;
+      font-size: 0.875rem; color: var(--text-mid);
+    }
+    .filter-check input[type="checkbox"] { accent-color: var(--navy); width: 15px; height: 15px; cursor: pointer; }
+    .filter-check:hover { color: var(--text); }
+    .filter-check-count { margin-left: auto; font-size: 0.775rem; color: var(--text-dim); }
+    .filter-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 0;
+    }
+    .filter-toggle-label { font-size: 0.875rem; color: var(--text-mid); }
+    .toggle-switch {
+      width: 38px; height: 22px; border-radius: 11px;
+      background: var(--border); position: relative; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-switch.on { background: var(--navy); }
+    .toggle-switch::after {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: white; top: 3px; left: 3px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch.on::after { transform: translateX(16px); }
+    .star-filter { display: flex; gap: 6px; margin-top: 4px; }
+    .star-opt {
+      padding: 5px 10px; border-radius: var(--r-sm);
+      border: 1.5px solid var(--border);
+      font-size: 0.8rem; color: var(--text-mid); cursor: pointer;
+      transition: all 0.12s;
+    }
+    .star-opt:hover { border-color: var(--navy); }
+    .star-opt.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+    /* Active filter chips */
+    .active-filters {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+    }
+    .active-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 999px;
+      background: var(--navy); color: white;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .active-chip-remove {
+      cursor: pointer; font-size: 1rem; line-height: 1;
+      opacity: 0.7; transition: opacity 0.1s;
+    }
+    .active-chip-remove:hover { opacity: 1; }
+
+    /* Results header */
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .results-count { font-size: 0.9rem; color: var(--text-mid); }
+    .results-count strong { color: var(--text); font-weight: 700; }
+    .results-sort {
+      padding: 7px 12px; border-radius: var(--r-sm);
+      border: 1.5px solid var(--border); font-family: var(--font-body);
+      font-size: 0.875rem; color: var(--text); background: var(--surface);
+      outline: none; cursor: pointer;
+    }
+
+    /* Results grid */
+    .results-grid { display: flex; flex-direction: column; gap: 14px; }
+
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      cursor: pointer;
+      transition: all 0.15s var(--ease-out);
+    }
+    .result-card:hover { border-color: var(--navy-soft); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    @media (max-width: 540px) { .result-card { grid-template-columns: 1fr; } }
+    .result-photo { overflow: hidden; background: var(--border); }
+    .result-photo img { width: 100%; height: 100%; object-fit: cover; min-height: 130px; }
+    .result-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 7px; }
+    .result-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--text); }
+    .result-location { font-size: 0.825rem; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
+    .result-programs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .result-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .result-distance { font-size: 0.78rem; color: var(--text-dim); }
+
+    /* No results */
+    .no-results { text-align: center; padding: 64px 0; }
+    .no-results-icon { font-size: 3rem; margin-bottom: 16px; }
+
+    /* Mobile filter toggle */
+    .mobile-filter-btn {
+      display: none;
+      width: 100%;
+      background: var(--navy); color: white;
+      border: none; border-radius: var(--r-md);
+      padding: 12px 20px; font-family: var(--font-body);
+      font-weight: 600; font-size: 0.9rem; cursor: pointer;
+      align-items: center; justify-content: center; gap: 8px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 860px) { .mobile-filter-btn { display: flex; } }
+    @media (max-width: 860px) { .filter-panel { display: none; } .filter-panel.open { display: block; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">mat<span>made</span></a>
+    <div class="nav-search">
+      <input type="text" placeholder="City, state, or gym name…" aria-label="Search gyms" id="nav-search-input">
+      <svg class="nav-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="nav-links">
+      <a href="search.html" class="nav-link" style="color:var(--text);font-weight:600">Find Gyms</a>
+      <a href="show.html" class="nav-link">The Show</a>
+      <a href="story.html" class="nav-link">Stories</a>
+      <a href="#" class="btn btn-outline btn-sm" style="border-radius:999px">Add Your Gym</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Search hero -->
+<div class="search-hero">
+  <div class="container">
+    <h1>Find Your Academy</h1>
+    <div class="search-hero-bar" role="search">
+      <input type="text" placeholder="Austin, TX — or gym name…" aria-label="Search location or gym" value="Austin, TX">
+      <button aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+    </div>
+    <p class="search-hint">Try: <a>"BJJ near me"</a> · <a>"Gracie Barra Chicago"</a> · <a>"no-gi Denver"</a></p>
+  </div>
+</div>
+
+<!-- Main content -->
+<div class="container">
+  <div class="search-layout">
+
+    <!-- Filter panel -->
+    <button class="mobile-filter-btn" id="filter-toggle-btn" aria-expanded="false">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      Filters
+    </button>
+
+    <aside>
+      <div class="filter-panel" id="filter-panel" role="search" aria-label="Filter gyms">
+        <div class="filter-panel-header">
+          <h3>Filters</h3>
+          <span class="filter-clear" role="button" tabindex="0">Clear all</span>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-label">Program Type</div>
+          <label class="filter-check"><input type="checkbox" checked> BJJ / Gi <span class="filter-check-count">3,820</span></label>
+          <label class="filter-check"><input type="checkbox" checked> No-Gi <span class="filter-check-count">2,940</span></label>
+          <label class="filter-check"><input type="checkbox"> MMA <span class="filter-check-count">1,850</span></label>
+          <label class="filter-check"><input type="checkbox"> Kids Programs <span class="filter-check-count">4,100</span></label>
+          <label class="filter-check"><input type="checkbox"> Women's Only <span class="filter-check-count">880</span></label>
+          <label class="filter-check"><input type="checkbox"> Competition Team <span class="filter-check-count">1,240</span></label>
+          <label class="filter-check"><input type="checkbox"> Private Lessons <span class="filter-check-count">2,300</span></label>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-label">Minimum Rating</div>
+          <div class="star-filter">
+            <div class="star-opt">Any</div>
+            <div class="star-opt active">3.0+</div>
+            <div class="star-opt">4.0+</div>
+            <div class="star-opt">4.5+</div>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-label">Verified Only</div>
+          <div class="filter-toggle">
+            <span class="filter-toggle-label">Show verified gyms only</span>
+            <div class="toggle-switch" id="verified-toggle" role="switch" aria-checked="false" tabindex="0"></div>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-label">Affiliation</div>
+          <label class="filter-check"><input type="checkbox"> Gracie Barra <span class="filter-check-count">289</span></label>
+          <label class="filter-check"><input type="checkbox"> Alliance <span class="filter-check-count">148</span></label>
+          <label class="filter-check"><input type="checkbox"> Checkmat <span class="filter-check-count">124</span></label>
+          <label class="filter-check"><input type="checkbox"> 10th Planet <span class="filter-check-count">98</span></label>
+          <label class="filter-check"><input type="checkbox"> Atos <span class="filter-check-count">67</span></label>
+          <label class="filter-check"><input type="checkbox"> Independent <span class="filter-check-count">5,200</span></label>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group-label">Belt Level Friendly</div>
+          <label class="filter-check"><input type="checkbox" checked> Beginners Welcome <span class="filter-check-count">7,200</span></label>
+          <label class="filter-check"><input type="checkbox"> Advanced / Competitors <span class="filter-check-count">2,100</span></label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Results -->
+    <main>
+      <!-- Active filters -->
+      <div class="active-filters" aria-label="Active filters">
+        <span class="active-chip">BJJ / Gi <span class="active-chip-remove" aria-label="Remove filter">×</span></span>
+        <span class="active-chip">No-Gi <span class="active-chip-remove" aria-label="Remove filter">×</span></span>
+        <span class="active-chip">Rating 3.0+ <span class="active-chip-remove" aria-label="Remove filter">×</span></span>
+      </div>
+
+      <div class="results-header">
+        <p class="results-count">Showing <strong>58</strong> gyms near <strong>Austin, TX</strong></p>
+        <select class="results-sort" aria-label="Sort results">
+          <option>Sort: Best Match</option>
+          <option>Sort: Highest Rated</option>
+          <option>Sort: Most Reviewed</option>
+          <option>Sort: Nearest</option>
+        </select>
+      </div>
+
+      <div class="results-grid">
+
+        <article class="result-card" onclick="location.href='gym.html'">
+          <div class="result-photo">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=75" alt="Gracie Barra South Austin" loading="lazy">
+          </div>
+          <div class="result-body">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div>
+                <div class="result-name">Gracie Barra South Austin</div>
+                <div class="result-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  2601 S Lamar Blvd, Austin, TX · 1.2 mi
+                </div>
+              </div>
+              <span class="badge badge-verified" style="font-size:0.7rem;flex-shrink:0">✓ Verified</span>
+            </div>
+            <div class="result-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">Kids</span>
+              <span class="badge badge-program">Women's</span>
+            </div>
+            <div class="result-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.85rem">★★★★★</span>
+                <span class="score" style="font-size:0.95rem">4.9</span>
+                <span class="count">(142)</span>
+              </div>
+              <span style="font-size:0.78rem;font-weight:600;color:var(--navy-soft)">View gym →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="result-card" onclick="location.href='gym.html'">
+          <div class="result-photo">
+            <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=400&q=75" alt="10th Planet Austin" loading="lazy">
+          </div>
+          <div class="result-body">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div>
+                <div class="result-name">10th Planet Austin</div>
+                <div class="result-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  512 W 6th St, Austin, TX · 2.8 mi
+                </div>
+              </div>
+            </div>
+            <div class="result-programs">
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">MMA</span>
+              <span class="badge badge-program">Competition</span>
+            </div>
+            <div class="result-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.85rem">★★★★½</span>
+                <span class="score" style="font-size:0.95rem">4.7</span>
+                <span class="count">(88)</span>
+              </div>
+              <span style="font-size:0.78rem;font-weight:600;color:var(--navy-soft)">View gym →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="result-card" onclick="location.href='gym.html'">
+          <div class="result-photo">
+            <img src="https://images.unsplash.com/photo-1555597673-b21d5c935865?w=400&q=75" alt="Alliance Austin" loading="lazy">
+          </div>
+          <div class="result-body">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div>
+                <div class="result-name">Alliance Jiu-Jitsu Austin</div>
+                <div class="result-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  4310 Medical Pkwy, Austin, TX · 3.4 mi
+                </div>
+              </div>
+              <span class="badge badge-verified" style="font-size:0.7rem;flex-shrink:0">✓ Verified</span>
+            </div>
+            <div class="result-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">Kids</span>
+              <span class="badge badge-program">Comp Team</span>
+            </div>
+            <div class="result-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.85rem">★★★★★</span>
+                <span class="score" style="font-size:0.95rem">4.8</span>
+                <span class="count">(103)</span>
+              </div>
+              <span style="font-size:0.78rem;font-weight:600;color:var(--navy-soft)">View gym →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="result-card" onclick="location.href='gym.html'">
+          <div class="result-photo">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=75" alt="Checkmat Austin" loading="lazy">
+          </div>
+          <div class="result-body">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div>
+                <div class="result-name">Checkmat Austin</div>
+                <div class="result-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  900 N Lamar Blvd, Austin, TX · 4.1 mi
+                </div>
+              </div>
+            </div>
+            <div class="result-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">Wrestling</span>
+            </div>
+            <div class="result-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.85rem">★★★★½</span>
+                <span class="score" style="font-size:0.95rem">4.6</span>
+                <span class="count">(61)</span>
+              </div>
+              <span style="font-size:0.78rem;font-weight:600;color:var(--navy-soft)">View gym →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="result-card" onclick="location.href='gym.html'">
+          <div class="result-photo">
+            <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400&q=75" alt="Marcelo Garcia Austin" loading="lazy">
+          </div>
+          <div class="result-body">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div>
+                <div class="result-name">Austin BJJ Academy</div>
+                <div class="result-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  7208 McNeil Dr, Austin, TX · 5.7 mi
+                </div>
+              </div>
+              <span class="badge badge-verified" style="font-size:0.7rem;flex-shrink:0">✓ Verified</span>
+            </div>
+            <div class="result-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">Kids</span>
+              <span class="badge badge-program">Beginners</span>
+            </div>
+            <div class="result-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.85rem">★★★★★</span>
+                <span class="score" style="font-size:0.95rem">4.9</span>
+                <span class="count">(74)</span>
+              </div>
+              <span style="font-size:0.78rem;font-weight:600;color:var(--navy-soft)">View gym →</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <div style="text-align:center;margin-top:32px">
+        <button class="btn btn-outline" style="padding:12px 40px">Load 10 More Gyms</button>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">mat<span>made</span></div>
+        <p class="footer-desc">The world's largest BJJ and martial arts gym directory.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="search.html">Find Gyms</a></li>
+          <li><a href="state.html">Browse by State</a></li>
+          <li><a href="city.html">Browse by City</a></li>
+          <li><a href="affiliation.html">Browse by Affiliation</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Content</div>
+        <ul class="footer-links">
+          <li><a href="show.html">The Show</a></li>
+          <li><a href="story.html">Stories</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="#">Add Your Gym</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MatMade. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="search.html" class="mobile-nav-item active" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </a>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      Map
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </div>
+  </div>
+</nav>
+
+<script src="js/app.js"></script>
+<script>
+  // Filter panel mobile toggle
+  const filterBtn = document.getElementById('filter-toggle-btn');
+  const filterPanel = document.getElementById('filter-panel');
+  if (filterBtn && filterPanel) {
+    filterBtn.addEventListener('click', () => {
+      const open = filterPanel.classList.toggle('open');
+      filterBtn.setAttribute('aria-expanded', open);
+      filterBtn.textContent = open ? '✕ Close Filters' : '⊞ Filters';
+    });
+  }
+
+  // Verified toggle
+  const toggle = document.getElementById('verified-toggle');
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      const on = toggle.classList.toggle('on');
+      toggle.setAttribute('aria-checked', on);
+    });
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle.click(); }
+    });
+  }
+
+  // Star filter
+  document.querySelectorAll('.star-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      opt.closest('.star-filter').querySelectorAll('.star-opt').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+    });
+  });
+
+  // Active chip remove
+  document.querySelectorAll('.active-chip-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.target.closest('.active-chip').remove();
+    });
+  });
+</script>
+</body>
+</html>

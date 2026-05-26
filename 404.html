@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tapped Out — MatMade 404</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: oklch(9% 0.05 258);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Minimal logo */
+    .logo-404 {
+      font-family: var(--font-display);
+      font-weight: 800; font-size: 1.1rem;
+      letter-spacing: -0.04em;
+      color: oklch(45% 0.06 258);
+      margin-bottom: 48px;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .logo-404 span { color: oklch(35% 0.12 23); }
+    .logo-404:hover { color: oklch(65% 0.04 258); }
+    .logo-404:hover span { color: var(--red); }
+
+    /* Mat arena */
+    .mat-arena {
+      width: clamp(260px, 50vw, 360px);
+      height: clamp(260px, 50vw, 360px);
+      position: relative;
+      margin-bottom: 36px;
+      flex-shrink: 0;
+    }
+
+    /* SVG takes full mat-arena */
+    .grapple-svg {
+      width: 100%; height: 100%;
+      overflow: visible;
+    }
+
+    /* Defender (YOU) shake animation */
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.015); }
+    }
+    @keyframes struggle {
+      0%   { transform: translateX(0) rotate(0deg); }
+      8%   { transform: translateX(-10px) rotate(-4deg); }
+      16%  { transform: translateX(10px) rotate(4deg); }
+      24%  { transform: translateX(-8px) rotate(-3deg); }
+      32%  { transform: translateX(8px) rotate(3deg); }
+      40%  { transform: translateX(-5px) rotate(-1.5deg); }
+      48%  { transform: translateX(5px) rotate(1.5deg); }
+      56%  { transform: translateX(-3px) rotate(-1deg); }
+      64%  { transform: translateX(3px) rotate(0.5deg); }
+      72%  { transform: translateX(-1px) rotate(0); }
+      80%  { transform: translateX(1px) rotate(0); }
+      100% { transform: translateX(0) rotate(0); }
+    }
+    @keyframes escape {
+      0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+      30%  { transform: translateY(-15px) rotate(-8deg) scale(1.05); opacity: 1; }
+      60%  { transform: translateY(-5px) rotate(5deg) scale(1.02); opacity: 1; }
+      100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    }
+    @keyframes attacker-recoil {
+      0%   { transform: translateX(0) rotate(0deg); opacity: 1; }
+      40%  { transform: translateX(18px) rotate(12deg); opacity: 0.6; }
+      100% { transform: translateX(28px) rotate(8deg); opacity: 0.25; }
+    }
+    @keyframes tap-pulse {
+      0%, 100% { r: 6; opacity: 0.9; }
+      50%       { r: 11; opacity: 0.3; }
+    }
+    @keyframes belt-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes float-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .defender-group { animation: breathe 2.5s ease-in-out infinite; transform-origin: 130px 158px; }
+    .defender-group.struggling { animation: struggle 0.9s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .defender-group.escaped { animation: escape 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .attacker-group { transform-origin: 175px 150px; transition: all 0.6s cubic-bezier(0.22,1,0.36,1); }
+    .attacker-group.recoiled { animation: attacker-recoil 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+    /* Headline */
+    .headline-404 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 12px;
+      text-align: center;
+      animation: float-in 0.5s var(--ease-out) 0.1s both;
+    }
+    .headline-404 em { color: var(--red); font-style: normal; }
+
+    .subtitle-404 {
+      color: oklch(58% 0.025 258);
+      font-size: clamp(0.88rem, 2vw, 1rem);
+      line-height: 1.6;
+      text-align: center;
+      max-width: 400px;
+      margin-bottom: 24px;
+      animation: float-in 0.5s var(--ease-out) 0.2s both;
+    }
+
+    /* Stats strip */
+    .stats-404 {
+      display: flex; gap: 28px; margin-bottom: 28px;
+      animation: float-in 0.5s var(--ease-out) 0.3s both;
+    }
+    .stat-404 { text-align: center; }
+    .stat-404-val {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.5rem; letter-spacing: -0.03em;
+      color: white; line-height: 1;
+    }
+    .stat-404-val.red { color: var(--red); }
+    .stat-404-label { font-size: 0.7rem; color: oklch(45% 0.03 258); margin-top: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Commentary */
+    .commentary-404 {
+      min-height: 28px;
+      font-size: 0.85rem; color: oklch(52% 0.03 258);
+      font-style: italic; text-align: center;
+      margin-bottom: 24px;
+      transition: opacity 0.2s;
+      max-width: 380px;
+      animation: float-in 0.5s var(--ease-out) 0.35s both;
+    }
+
+    /* Buttons */
+    .btns-404 {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+      animation: float-in 0.5s var(--ease-out) 0.4s both;
+    }
+
+    .btn-tap {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 999px;
+      background: var(--red); color: white;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+      border: none; cursor: pointer;
+      transition: all 0.15s var(--ease-out);
+      text-decoration: none;
+    }
+    .btn-tap:hover { background: var(--red-dim); transform: translateY(-2px); box-shadow: 0 6px 20px oklch(50% 0.22 23 / 0.4); }
+
+    .btn-fight {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 999px;
+      background: transparent; color: oklch(70% 0.025 258);
+      font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+      border: 1.5px solid oklch(28% 0.05 258);
+      cursor: pointer;
+      transition: all 0.15s var(--ease-out);
+    }
+    .btn-fight:hover { border-color: oklch(50% 0.05 258); color: white; transform: translateY(-2px); }
+    .btn-fight:active { transform: scale(0.96); }
+
+    /* Belt rank badge (shows escape level) */
+    .belt-rank {
+      margin-top: 24px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.75rem; color: oklch(40% 0.03 258);
+      animation: float-in 0.5s var(--ease-out) 0.5s both;
+    }
+    .belt-pip {
+      width: 28px; height: 8px; border-radius: 2px;
+      background: oklch(20% 0.04 258); transition: background 0.3s;
+    }
+    .belt-pip.white  { background: oklch(88% 0.005 258); }
+    .belt-pip.blue   { background: oklch(45% 0.17 258); }
+    .belt-pip.purple { background: oklch(43% 0.19 310); }
+    .belt-pip.brown  { background: oklch(38% 0.09 55); }
+    .belt-pip.black  { background: oklch(18% 0.02 258); box-shadow: 0 0 8px white; }
+
+    /* Escaped state */
+    .escaped-msg {
+      display: none;
+      background: oklch(18% 0.08 150 / 0.3);
+      border: 1px solid oklch(40% 0.14 150 / 0.4);
+      border-radius: var(--r-md);
+      padding: 14px 20px;
+      font-size: 0.875rem; color: oklch(72% 0.12 150);
+      text-align: center; max-width: 380px;
+      margin-bottom: 12px;
+      line-height: 1.55;
+    }
+    .escaped-msg.visible { display: block; animation: float-in 0.4s var(--ease-out) both; }
+
+    /* Timer */
+    .timer-404 {
+      font-size: 0.72rem; color: oklch(36% 0.03 258);
+      margin-top: 16px; letter-spacing: 0.08em;
+      font-family: var(--font-display); font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="logo-404">mat<span>made</span></a>
+
+<!-- Mat animation -->
+<div class="mat-arena" aria-hidden="true">
+  <svg class="grapple-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Mat circle with grid -->
+    <defs>
+      <pattern id="mat-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="oklch(28% 0.04 55)" stroke-width="0.6" opacity="0.5"/>
+      </pattern>
+      <clipPath id="mat-clip"><circle cx="150" cy="150" r="136"/></clipPath>
+      <radialGradient id="mat-grad" cx="50%" cy="45%" r="55%">
+        <stop offset="0%" stop-color="oklch(35% 0.06 55)"/>
+        <stop offset="100%" stop-color="oklch(24% 0.05 55)"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- Mat base -->
+    <circle cx="150" cy="150" r="136" fill="url(#mat-grad)"/>
+    <rect x="14" y="14" width="272" height="272" fill="url(#mat-grid)" clip-path="url(#mat-clip)"/>
+    <!-- Mat border circles -->
+    <circle cx="150" cy="150" r="136" fill="none" stroke="oklch(30% 0.05 55)" stroke-width="6"/>
+    <circle cx="150" cy="150" r="100" fill="none" stroke="oklch(28% 0.05 55)" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="150" cy="150" r="50" fill="none" stroke="oklch(28% 0.05 55)" stroke-width="1.5" opacity="0.4"/>
+
+    <!-- Attacker group (404, rear naked choke position) -->
+    <g class="attacker-group" id="attacker-group">
+      <!-- Attacker body (wedged behind defender) -->
+      <ellipse cx="180" cy="148" rx="52" ry="22" fill="oklch(18% 0.06 258)" transform="rotate(-8 180 148)"/>
+      <!-- Attacker head -->
+      <circle cx="220" cy="132" r="25" fill="oklch(22% 0.07 258)" stroke="oklch(30% 0.07 258)" stroke-width="2"/>
+      <!-- 404 label on attacker's head -->
+      <text x="220" y="137" text-anchor="middle" fill="oklch(60% 0.04 258)" font-size="10" font-weight="700" font-family="system-ui, sans-serif" letter-spacing="0.5">404</text>
+      <!-- Attacker arms wrapping (the choke) -->
+      <path d="M 195 138 Q 158 118 96 148 Q 100 172 158 165" fill="none" stroke="oklch(22% 0.07 258)" stroke-width="16" stroke-linecap="round"/>
+      <!-- Forearm pressing on neck -->
+      <ellipse cx="98" cy="158" rx="16" ry="14" fill="oklch(20% 0.06 258)"/>
+    </g>
+
+    <!-- Defender group (YOU, being choked) -->
+    <g class="defender-group" id="defender-group">
+      <!-- Defender body (horizontal, pinned) -->
+      <ellipse cx="138" cy="160" rx="56" ry="22" fill="oklch(46% 0.2 23)"/>
+      <!-- Defender head -->
+      <circle cx="78" cy="157" r="27" fill="oklch(78% 0.08 55)" stroke="oklch(46% 0.2 23)" stroke-width="3"/>
+      <!-- YOU label -->
+      <text x="78" y="163" text-anchor="middle" fill="oklch(40% 0.15 23)" font-size="10" font-weight="800" font-family="system-ui, sans-serif">YOU</text>
+      <!-- Defender arms (reaching back, trying to escape) -->
+      <line x1="108" y1="143" x2="92" y2="118" stroke="oklch(72% 0.08 50)" stroke-width="9" stroke-linecap="round"/>
+      <line x1="124" y1="141" x2="112" y2="115" stroke="oklch(72% 0.08 50)" stroke-width="9" stroke-linecap="round"/>
+    </g>
+
+    <!-- Choke indicator pulse (animated SVG) -->
+    <circle id="choke-pulse" cx="80" cy="143" r="6" fill="var(--red)" opacity="0.9">
+      <animate attributeName="r" values="5;11;5" dur="1.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.9;0.2;0.9" dur="1.2s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Sweat drops (subtle) -->
+    <ellipse cx="62" cy="168" rx="3" ry="5" fill="oklch(72% 0.04 258)" opacity="0.5" transform="rotate(-20 62 168)">
+      <animate attributeName="cy" values="168;178;168" dur="2.1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0;0.5" dur="2.1s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="48" cy="155" rx="2" ry="4" fill="oklch(72% 0.04 258)" opacity="0.4" transform="rotate(-15 48 155)">
+      <animate attributeName="cy" values="155;165;155" dur="1.8s" begin="0.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0;0.4" dur="1.8s" begin="0.4s" repeatCount="indefinite"/>
+    </ellipse>
+
+  </svg>
+</div>
+
+<!-- Headline -->
+<h1 class="headline-404" id="main-headline">You've been <em>submitted.</em></h1>
+<p class="subtitle-404" id="main-subtitle">This page got caught in a rear naked choke and will not be coming back anytime soon.</p>
+
+<!-- Stats -->
+<div class="stats-404">
+  <div class="stat-404">
+    <div class="stat-404-val red" id="attempts-count">0</div>
+    <div class="stat-404-label">Escape Attempts</div>
+  </div>
+  <div class="stat-404" style="border-left:1px solid oklch(22% 0.04 258);padding-left:28px">
+    <div class="stat-404-val" id="timer-val">0:00</div>
+    <div class="stat-404-label">Time Stuck</div>
+  </div>
+  <div class="stat-404" style="border-left:1px solid oklch(22% 0.04 258);padding-left:28px">
+    <div class="stat-404-val" id="submission-pct">100%</div>
+    <div class="stat-404-label">Submission %</div>
+  </div>
+</div>
+
+<!-- Commentary -->
+<p class="commentary-404" id="commentary">Tap the mat twice to go home. Or... try to escape. Your call.</p>
+
+<!-- Escaped message -->
+<div class="escaped-msg" id="escaped-msg">
+  🎉 HOLY COW. You actually got out. That was the most stubborn display of determination we have ever witnessed. You're free. You're still lost though.
+</div>
+
+<!-- Buttons -->
+<div class="btns-404">
+  <a href="index.html" class="btn-tap" id="tap-out-btn">
+    🤙 TAP OUT — Go Home
+  </a>
+  <button class="btn-fight" id="fight-back-btn" aria-label="Fight back against the submission">
+    💪 Fight Back
+  </button>
+</div>
+
+<!-- Belt rank progress -->
+<div class="belt-rank" aria-label="Your escape skill level" role="status">
+  <span>Escape Rank:</span>
+  <div class="belt-pip white" id="b0"></div>
+  <div class="belt-pip" id="b1"></div>
+  <div class="belt-pip" id="b2"></div>
+  <div class="belt-pip" id="b3"></div>
+  <div class="belt-pip" id="b4"></div>
+  <span id="belt-label" style="margin-left:4px">White Belt</span>
+</div>
+
+<div class="timer-404" id="timer-label">You've been stuck here since you opened this page.</div>
+
+<script>
+(function() {
+  const COMMENTARY = [
+    "Tap the mat twice to go home. Or... try to escape. Your call.",
+    "Still not giving up? Okay. We respect it. Kind of.",
+    "Maybe try bridging first? No? Alright then.",
+    "Your hip escape game is... a work in progress.",
+    "Coach would say 'RELAX!' right about now.",
+    "You're gassing out. We can see it from here.",
+    "The tap is inevitable. The mat knows.",
+    "10 years of training and you'd escape. Maybe.",
+    "Have you tried NOT being on a 404 page?",
+    "Your stubbornness is giving very much white belt energy.",
+    "Okay this is genuinely impressive. Nobody fights this long.",
+    "The 404 is tired. You've worn it down. KEEP GOING.",
+  ];
+
+  const BELTS = [
+    { label: 'White Belt',  colors: ['white',null,null,null,null] },
+    { label: 'Blue Belt',   colors: ['white','blue',null,null,null] },
+    { label: 'Purple Belt', colors: ['white','blue','purple',null,null] },
+    { label: 'Brown Belt',  colors: ['white','blue','purple','brown',null] },
+    { label: 'BLACK BELT 🏆',  colors: ['white','blue','purple','brown','black'] },
+  ];
+
+  let attempts = 0;
+  let escaped = false;
+  let secondsStuck = 0;
+  let struggling = false;
+
+  const attemptsEl = document.getElementById('attempts-count');
+  const timerEl = document.getElementById('timer-val');
+  const submissionEl = document.getElementById('submission-pct');
+  const commentaryEl = document.getElementById('commentary');
+  const headlineEl = document.getElementById('main-headline');
+  const subtitleEl = document.getElementById('main-subtitle');
+  const escapedMsg = document.getElementById('escaped-msg');
+  const fightBtn = document.getElementById('fight-back-btn');
+  const tapBtn = document.getElementById('tap-out-btn');
+  const defenderGroup = document.getElementById('defender-group');
+  const attackerGroup = document.getElementById('attacker-group');
+  const chokePulse = document.getElementById('choke-pulse');
+  const beltLabel = document.getElementById('belt-label');
+
+  // Timer
+  setInterval(() => {
+    secondsStuck++;
+    const m = Math.floor(secondsStuck / 60);
+    const s = secondsStuck % 60;
+    timerEl.textContent = m + ':' + String(s).padStart(2, '0');
+  }, 1000);
+
+  function updateBelt(n) {
+    const tier = Math.min(Math.floor(n / 2), 4);
+    const b = BELTS[tier];
+    beltLabel.textContent = b.label;
+    b.colors.forEach((c, i) => {
+      const el = document.getElementById('b' + i);
+      el.className = 'belt-pip' + (c ? ' ' + c : '');
+    });
+  }
+
+  function setCommentary(text, fade) {
+    if (fade) commentaryEl.style.opacity = 0;
+    setTimeout(() => {
+      commentaryEl.textContent = text;
+      commentaryEl.style.opacity = 1;
+    }, fade ? 200 : 0);
+  }
+
+  function triggerStruggle() {
+    if (struggling || escaped) return;
+    struggling = true;
+    defenderGroup.classList.remove('struggling');
+    void defenderGroup.offsetWidth; // reflow
+    defenderGroup.classList.add('struggling');
+    setTimeout(() => { defenderGroup.classList.remove('struggling'); struggling = false; }, 950);
+  }
+
+  function triggerEscape() {
+    escaped = true;
+    // Stop the choke pulse
+    chokePulse.style.display = 'none';
+    // Animate out
+    defenderGroup.classList.remove('struggling');
+    defenderGroup.classList.add('escaped');
+    attackerGroup.classList.add('recoiled');
+    // Show escaped message
+    escapedMsg.classList.add('visible');
+    // Update copy
+    headlineEl.innerHTML = 'You. Are. <em>Free.</em>';
+    subtitleEl.textContent = '...but you still can\'t find the page you were looking for.';
+    submissionEl.textContent = '0%';
+    setCommentary('White belts don\'t do that. Respect.', true);
+    // Update tap btn
+    tapBtn.textContent = '🏠 Go Home (Finally)';
+    fightBtn.style.display = 'none';
+    updateBelt(10);
+  }
+
+  fightBtn.addEventListener('click', () => {
+    if (escaped) return;
+    attempts++;
+    attemptsEl.textContent = attempts;
+
+    // Submission % goes down
+    const pct = Math.max(0, 100 - attempts * 8);
+    submissionEl.textContent = pct + '%';
+
+    // Belt progress
+    updateBelt(attempts);
+
+    // Struggle animation
+    triggerStruggle();
+
+    // Commentary
+    const idx = Math.min(attempts - 1, COMMENTARY.length - 1);
+    setCommentary(COMMENTARY[idx], true);
+
+    // Escape at 12 attempts
+    if (attempts >= 12) {
+      setTimeout(triggerEscape, 600);
+    }
+  });
+
+  // Keyboard support for fight back
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && !escaped && document.activeElement !== tapBtn) {
+      e.preventDefault();
+      fightBtn.click();
+    }
+  });
+
+  // Double-tap on mobile = tap out
+  let lastTap = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTap < 350) window.location.href = 'index.html';
+    lastTap = now;
+  });
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The MatMade Show — BJJ Stories That Change Lives</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Dark editorial — sports documentary feel */
+    .show-hero {
+      background: oklch(9% 0.045 258);
+      padding: clamp(48px, 6vw, 80px) 0 0;
+      overflow: hidden;
+    }
+    .show-hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(32px, 4vw, 64px);
+      align-items: end;
+    }
+    @media (max-width: 760px) { .show-hero-inner { grid-template-columns: 1fr; } }
+    .show-hero-text { padding-bottom: clamp(32px, 4vw, 56px); }
+    .show-hero-eyebrow {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--red);
+      margin-bottom: 14px;
+    }
+    .show-hero-title {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      color: white; line-height: 0.95; letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+    .show-hero-title em { color: var(--red); font-style: normal; }
+    .show-hero-desc {
+      color: oklch(72% 0.025 258); font-size: 1.05rem; line-height: 1.65;
+      margin-bottom: 28px; max-width: 480px;
+    }
+    .show-hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .show-stat-val {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.6rem; color: white; letter-spacing: -0.03em;
+    }
+    .show-stat-val span { color: var(--red); }
+    .show-stat-label { font-size: 0.75rem; color: oklch(55% 0.03 258); margin-top: 2px; }
+
+    /* Featured video */
+    .show-featured-video {
+      position: relative;
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+      overflow: hidden;
+      aspect-ratio: 16/10;
+      cursor: pointer;
+    }
+    .show-featured-video img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s var(--ease-out);
+    }
+    .show-featured-video:hover img { transform: scale(1.03); }
+    .show-featured-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, oklch(8% 0.06 258 / 0.9) 0%, oklch(8% 0.06 258 / 0.2) 50%, oklch(8% 0.06 258 / 0.05) 100%);
+    }
+    .show-featured-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s var(--ease-out), background 0.15s;
+      box-shadow: 0 8px 32px oklch(50% 0.22 23 / 0.5);
+    }
+    .show-featured-video:hover .show-featured-play { transform: translate(-50%,-50%) scale(1.1); }
+    .show-featured-meta {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 20px 24px;
+    }
+    .show-featured-ep { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red-dim); margin-bottom: 5px; }
+    .show-featured-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: white; line-height: 1.35; }
+
+    /* Season nav */
+    .season-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 60px; z-index: 100;
+    }
+    .season-nav-inner { display: flex; align-items: center; gap: 0; overflow-x: auto; scrollbar-width: none; }
+    .season-nav-inner::-webkit-scrollbar { display: none; }
+    .season-tab {
+      padding: 14px 20px; font-size: 0.875rem; font-weight: 500;
+      color: var(--text-dim); cursor: pointer; white-space: nowrap;
+      border-bottom: 2px solid transparent; transition: all 0.12s;
+      flex-shrink: 0;
+    }
+    .season-tab:hover { color: var(--text); }
+    .season-tab.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 700; }
+
+    /* Episode grid */
+    .episode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .episode-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.15s var(--ease-out);
+    }
+    .episode-card:hover { border-color: var(--navy-soft); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .episode-thumb {
+      position: relative; aspect-ratio: 16/9;
+      overflow: hidden; background: var(--border);
+    }
+    .episode-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease-out); }
+    .episode-card:hover .episode-thumb img { transform: scale(1.04); }
+    .episode-thumb-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, oklch(8% 0.06 258 / 0.7) 0%, transparent 60%);
+    }
+    .episode-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: oklch(100% 0 0 / 0.14); border: 1.5px solid oklch(100% 0 0 / 0.35);
+      display: flex; align-items: center; justify-content: center; color: white;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .episode-card:hover .episode-play { background: var(--red); border-color: var(--red); }
+    .episode-duration {
+      position: absolute; bottom: 8px; right: 10px;
+      background: oklch(8% 0.06 258 / 0.85);
+      color: white; font-size: 0.72rem; font-weight: 600;
+      padding: 2px 7px; border-radius: 4px;
+    }
+    .episode-body { padding: 14px 18px; }
+    .episode-num { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
+    .episode-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--text); line-height: 1.35; margin-bottom: 6px; }
+    .episode-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .episode-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .episode-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+
+    /* Subscribe band */
+    .subscribe-band {
+      background: var(--navy);
+      padding: clamp(40px, 5vw, 64px) 0;
+      margin-top: clamp(48px, 6vw, 96px);
+    }
+    .subscribe-inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
+    }
+    @media (max-width: 680px) { .subscribe-inner { grid-template-columns: 1fr; text-align: center; } }
+    .subscribe-platforms { display: flex; gap: 10px; flex-wrap: wrap; }
+    @media (max-width: 680px) { .subscribe-platforms { justify-content: center; } }
+    .platform-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 18px; border-radius: var(--r-md);
+      background: oklch(30% 0.06 258); color: white;
+      border: 1px solid oklch(40% 0.06 258);
+      font-size: 0.875rem; font-weight: 600; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .platform-btn:hover { background: oklch(38% 0.07 258); border-color: oklch(50% 0.06 258); }
+    .platform-btn-yt { background: oklch(30% 0.18 23); border-color: oklch(40% 0.18 23); }
+    .platform-btn-yt:hover { background: var(--red); border-color: var(--red); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">mat<span>made</span></a>
+    <div class="nav-search">
+      <input type="text" placeholder="City, state, or gym name…" aria-label="Search gyms">
+      <svg class="nav-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="nav-links">
+      <a href="search.html" class="nav-link">Find Gyms</a>
+      <a href="show.html" class="nav-link" style="color:var(--text);font-weight:600">The Show</a>
+      <a href="story.html" class="nav-link">Stories</a>
+      <a href="#" class="btn btn-outline btn-sm" style="border-radius:999px">Add Your Gym</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="show-hero">
+  <div class="container">
+    <div class="show-hero-inner">
+      <div class="show-hero-text fade-up">
+        <p class="show-hero-eyebrow">The MatMade Show</p>
+        <h1 class="show-hero-title">The mat <em>changes</em> people.</h1>
+        <p class="show-hero-desc">Real stories from real practitioners — about addiction, grief, transformation, and the quiet power of showing up to class when life gets hard.</p>
+        <div class="show-hero-stats">
+          <div>
+            <div class="show-stat-val"><span>84</span></div>
+            <div class="show-stat-label">Episodes</div>
+          </div>
+          <div>
+            <div class="show-stat-val"><span>2.1M</span></div>
+            <div class="show-stat-label">Views</div>
+          </div>
+          <div>
+            <div class="show-stat-val"><span>4</span></div>
+            <div class="show-stat-label">Seasons</div>
+          </div>
+        </div>
+      </div>
+      <div class="fade-up fade-up-delay-1">
+        <a href="https://youtu.be/aF81I53EDNE" target="_blank" rel="noopener" class="show-featured-video" aria-label="Watch Maajid's story">
+          <img src="https://img.youtube.com/vi/aF81I53EDNE/maxresdefault.jpg" alt="Maajid AL-kush — From Homeless to Hopeful" loading="lazy">
+          <div class="show-featured-overlay"></div>
+          <div class="show-featured-play" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="show-featured-meta">
+            <div class="show-featured-ep">Season 4 · Episode 1 · Latest</div>
+            <div class="show-featured-title">"From Homeless to Hopeful — Maajid AL-kush's Story"</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Season nav -->
+<div class="season-nav">
+  <div class="container">
+    <div class="season-nav-inner" role="tablist" aria-label="Seasons">
+      <div class="season-tab active" role="tab" aria-selected="true">Season 4</div>
+      <div class="season-tab" role="tab" aria-selected="false">Season 3</div>
+      <div class="season-tab" role="tab" aria-selected="false">Season 2</div>
+      <div class="season-tab" role="tab" aria-selected="false">Season 1</div>
+      <div class="season-tab" role="tab" aria-selected="false">All Episodes</div>
+    </div>
+  </div>
+</div>
+
+<!-- Episodes -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <p class="section-eyebrow">Season 4</p>
+        <h2>Latest Episodes</h2>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="filter-chip active" data-toggle>All</button>
+        <button class="filter-chip" data-toggle>PTSD</button>
+        <button class="filter-chip" data-toggle>Addiction</button>
+        <button class="filter-chip" data-toggle>Weight Loss</button>
+        <button class="filter-chip" data-toggle>Law Enforcement</button>
+      </div>
+    </div>
+
+    <div class="episode-grid">
+
+      <article class="episode-card">
+        <a href="https://youtu.be/aF81I53EDNE" target="_blank" rel="noopener" class="episode-thumb" aria-label="Watch Maajid's story">
+          <img src="https://img.youtube.com/vi/aF81I53EDNE/hqdefault.jpg" alt="Maajid AL-kush" loading="lazy">
+          <div class="episode-thumb-overlay"></div>
+          <div class="episode-play" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="episode-duration">18:42</div>
+        </a>
+        <div class="episode-body">
+          <div class="episode-num">S4 · E1</div>
+          <div class="episode-title">From Homeless to Hopeful — Maajid AL-kush</div>
+          <div class="episode-desc">Lost everything at rock bottom. Found Jiu Jitsu. Found himself. A story of radical transformation and the brotherhood of the mat.</div>
+          <div class="episode-footer">
+            <div class="episode-tags">
+              <span class="badge badge-outline" style="font-size:0.7rem">PTSD</span>
+              <span class="badge badge-outline" style="font-size:0.7rem">Transformation</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="episode-card">
+        <a href="https://youtu.be/_2y54UGK2vI" target="_blank" rel="noopener" class="episode-thumb" aria-label="Watch Joe Thompson's story">
+          <img src="https://img.youtube.com/vi/_2y54UGK2vI/hqdefault.jpg" alt="Joe Thompson" loading="lazy">
+          <div class="episode-thumb-overlay"></div>
+          <div class="episode-play" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="episode-duration">22:15</div>
+        </a>
+        <div class="episode-body">
+          <div class="episode-num">S4 · E2</div>
+          <div class="episode-title">Jiu Jitsu Was My Savior — Joe Thompson, 63</div>
+          <div class="episode-desc">Started training at 58. Survived cancer and divorce. Now gives back to the community that saved him in his darkest hour.</div>
+          <div class="episode-footer">
+            <div class="episode-tags">
+              <span class="badge badge-outline" style="font-size:0.7rem">Late Starter</span>
+              <span class="badge badge-outline" style="font-size:0.7rem">Community</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="episode-card">
+        <a href="https://youtu.be/LYuzb7qUGfs" target="_blank" rel="noopener" class="episode-thumb" aria-label="Watch Brian Dimatia's story">
+          <img src="https://img.youtube.com/vi/LYuzb7qUGfs/hqdefault.jpg" alt="Brian Dimatia" loading="lazy">
+          <div class="episode-thumb-overlay"></div>
+          <div class="episode-play" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="episode-duration">25:08</div>
+        </a>
+        <div class="episode-body">
+          <div class="episode-num">S4 · E3</div>
+          <div class="episode-title">The Perfect Time — Brian Dimatia</div>
+          <div class="episode-desc">Three years of hesitation. One decision that changed everything. Brian found BJJ at the moment his life needed it most.</div>
+          <div class="episode-footer">
+            <div class="episode-tags">
+              <span class="badge badge-outline" style="font-size:0.7rem">Addiction</span>
+              <span class="badge badge-outline" style="font-size:0.7rem">Recovery</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="episode-card">
+        <div class="episode-thumb" style="background:oklch(18% 0.05 258);display:flex;align-items:center;justify-content:center">
+          <div style="text-align:center;padding:20px">
+            <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:8px">Coming Next</div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:white;line-height:1.3">S4 · E4 drops June 3rd</div>
+          </div>
+        </div>
+        <div class="episode-body">
+          <div class="episode-num">S4 · E4 · Coming Soon</div>
+          <div class="episode-title">Weight Loss & Identity — Maria Santos</div>
+          <div class="episode-desc">Lost 80 lbs through BJJ. Gained something she never expected. Maria's story is about more than fitness — it's about becoming.</div>
+          <div class="episode-footer">
+            <div class="episode-tags">
+              <span class="badge badge-outline" style="font-size:0.7rem">Weight Loss</span>
+              <span class="badge badge-outline" style="font-size:0.7rem">Women's BJJ</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="episode-card">
+        <div class="episode-thumb" style="background:oklch(15% 0.04 258)">
+          <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;min-height:148px">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="oklch(40% 0.05 258)" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="episode-body">
+          <div class="episode-num">S3 · E12</div>
+          <div class="episode-title">The Detective — Officer Marcus Webb</div>
+          <div class="episode-desc">15 years in law enforcement. One year on the mat. How BJJ changed how Marcus sees conflict, control, and himself.</div>
+          <div class="episode-footer">
+            <div class="episode-tags">
+              <span class="badge badge-outline" style="font-size:0.7rem">Law Enforcement</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="episode-card">
+        <div class="episode-thumb" style="background:oklch(15% 0.04 258)">
+          <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;min-height:148px">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="oklch(40% 0.05 258)" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="episode-body">
+          <div class="episode-num">S3 · E11</div>
+          <div class="episode-title">After The Loss — Grieving Through Jiu Jitsu</div>
+          <div class="episode-desc">Lost her father. Couldn't get out of bed. Then a friend dragged her to an intro class. What happened next surprised everyone, including her.</div>
+          <div class="episode-footer">
+            <div class="episode-tags">
+              <span class="badge badge-outline" style="font-size:0.7rem">Grief</span>
+              <span class="badge badge-outline" style="font-size:0.7rem">Women's BJJ</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div style="text-align:center;margin-top:32px">
+      <button class="btn btn-outline" style="padding:12px 40px">Load More Episodes</button>
+    </div>
+  </div>
+</section>
+
+<!-- Subscribe band -->
+<div class="subscribe-band">
+  <div class="container">
+    <div class="subscribe-inner">
+      <div>
+        <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:10px">Never Miss an Episode</p>
+        <h2 style="color:white;margin-bottom:12px">New stories, every two weeks.</h2>
+        <p style="color:oklch(65% 0.03 258);font-size:0.95rem;line-height:1.6">Subscribe on your favorite platform. Every episode is free. Every story is real.</p>
+      </div>
+      <div>
+        <p style="color:oklch(65% 0.03 258);font-size:0.8rem;margin-bottom:14px;font-weight:600">AVAILABLE ON</p>
+        <div class="subscribe-platforms">
+          <a href="#" class="platform-btn platform-btn-yt" aria-label="Watch on YouTube">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.95C18.88 4 12 4 12 4s-6.88 0-8.59.47A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
+            YouTube
+          </a>
+          <a href="#" class="platform-btn" aria-label="Listen on Spotify">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            Spotify
+          </a>
+          <a href="#" class="platform-btn" aria-label="Listen on Apple Podcasts">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm0 4.8c2.4 0 4.32.72 5.88 2.04 1.44 1.32 2.28 3.12 2.28 5.16 0 2.52-.96 4.56-2.76 5.88l-.24.18c-.48.36-.72.84-.72 1.44v.48c0 .48-.36.84-.84.84h-2.88c-.48 0-.84-.36-.84-.84v-.36c0-.72-.36-1.44-.96-1.8-1.8-1.2-2.88-3.12-2.88-5.4 0-2.04.72-3.84 2.04-5.16C9.6 5.64 10.68 4.8 12 4.8z"/></svg>
+            Apple Podcasts
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">mat<span>made</span></div>
+        <p class="footer-desc">The world's largest BJJ and martial arts gym directory.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="search.html">Find Gyms</a></li>
+          <li><a href="state.html">Browse by State</a></li>
+          <li><a href="affiliation.html">Browse by Affiliation</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Content</div>
+        <ul class="footer-links">
+          <li><a href="show.html">The Show</a></li>
+          <li><a href="story.html">Stories</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="#">Add Your Gym</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MatMade. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="search.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </a>
+    <div class="mobile-nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      The Show
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </div>
+  </div>
+</nav>
+
+<script src="js/app.js"></script>
+<script>
+  document.querySelectorAll('.season-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.season-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

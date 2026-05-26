@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gracie Barra BJJ Gyms — Affiliation Directory | MatMade</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .aff-hero {
+      background: var(--navy);
+      padding: clamp(32px, 5vw, 64px) 0;
+    }
+    .aff-hero h1 { color: white; margin-bottom: 8px; }
+    .aff-hero-sub { color: oklch(70% 0.03 258); font-size: 1rem; }
+    .aff-hero-stats {
+      display: flex; gap: 32px; flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .aff-hero-stat-val {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.75rem; color: white; letter-spacing: -0.03em;
+    }
+    .aff-hero-stat-val span { color: var(--red); }
+    .aff-hero-stat-label { font-size: 0.8rem; color: oklch(60% 0.03 258); margin-top: 2px; }
+
+    .aff-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 40px;
+      align-items: start;
+      padding-top: 40px;
+    }
+    @media (max-width: 800px) { .aff-layout { grid-template-columns: 1fr; } }
+
+    .sidebar-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      position: sticky; top: 80px;
+    }
+    .sidebar-block-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700; font-size: 0.85rem;
+      color: var(--text);
+    }
+    .sidebar-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem; cursor: pointer;
+      transition: background 0.1s;
+      text-decoration: none; color: var(--text);
+    }
+    .sidebar-item:last-child { border-bottom: none; }
+    .sidebar-item:hover { background: var(--bg); }
+    .sidebar-item-more { color: var(--navy-soft); font-size: 0.8rem; font-weight: 600; }
+    .sidebar-count { font-size: 0.75rem; color: var(--text-dim); }
+
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .results-count { font-size: 0.9rem; color: var(--text-mid); }
+    .results-count strong { color: var(--text); }
+
+    .gym-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .gym-list-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      cursor: pointer;
+      transition: all 0.15s var(--ease-out);
+    }
+    .gym-list-card:hover { border-color: var(--navy-soft); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    @media (max-width: 540px) { .gym-list-card { grid-template-columns: 1fr; } }
+    .gym-list-photo { overflow: hidden; background: var(--border); }
+    .gym-list-photo img { width: 100%; height: 100%; object-fit: cover; min-height: 140px; }
+    .gym-list-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 8px; }
+    .gym-list-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .gym-list-name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--text); }
+    .gym-list-location { font-size: 0.825rem; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
+    .gym-list-programs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .gym-list-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+
+    .aff-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: oklch(22% 0.075 258 / 0.08);
+      border: 1px solid oklch(22% 0.075 258 / 0.2);
+      color: var(--navy-mid);
+      font-size: 0.75rem; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">mat<span>made</span></a>
+    <div class="nav-search">
+      <input type="text" placeholder="Search gyms…" aria-label="Search gyms">
+      <svg class="nav-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">Find Gyms</a>
+      <a href="#" class="nav-link">The Show</a>
+      <a href="#" class="btn btn-outline btn-sm" style="border-radius:999px">Add Your Gym</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Affiliation hero -->
+<div class="aff-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html" style="color:oklch(65% 0.03 258)">Home</a>
+      <span class="breadcrumb-sep" style="color:oklch(50% 0.03 258)">/</span>
+      <a href="#" style="color:oklch(65% 0.03 258)">Affiliations</a>
+      <span class="breadcrumb-sep" style="color:oklch(50% 0.03 258)">/</span>
+      <span style="color:white">Gracie Barra</span>
+    </div>
+    <h1>Gracie Barra</h1>
+    <p class="aff-hero-sub">BJJ academies affiliated with Gracie Barra worldwide</p>
+    <div class="aff-hero-stats">
+      <div>
+        <div class="aff-hero-stat-val"><span>289</span></div>
+        <div class="aff-hero-stat-label">Academies</div>
+      </div>
+      <div>
+        <div class="aff-hero-stat-val"><span>38</span></div>
+        <div class="aff-hero-stat-label">States</div>
+      </div>
+      <div>
+        <div class="aff-hero-stat-val"><span>4.7</span>★</div>
+        <div class="aff-hero-stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div style="background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 0; position: sticky; top: 60px; z-index: 100;">
+  <div class="container">
+    <div class="filter-bar">
+      <button class="filter-chip active" data-toggle>All Programs</button>
+      <button class="filter-chip" data-toggle>BJJ</button>
+      <button class="filter-chip" data-toggle>No-Gi</button>
+      <button class="filter-chip" data-toggle>MMA</button>
+      <button class="filter-chip" data-toggle>Kids Classes</button>
+      <button class="filter-chip" data-toggle>Competition Team</button>
+      <button class="filter-chip" data-toggle>Women's Only</button>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="container">
+  <div class="aff-layout">
+
+    <!-- Sidebar -->
+    <aside>
+      <div class="sidebar-block mb-6">
+        <div class="sidebar-block-header">Top States</div>
+        <a href="state.html" class="sidebar-item">
+          <span>California</span>
+          <span class="sidebar-count">41 gyms</span>
+        </a>
+        <div class="sidebar-item">
+          <span>Texas</span>
+          <span class="sidebar-count">28 gyms</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Florida</span>
+          <span class="sidebar-count">24 gyms</span>
+        </div>
+        <div class="sidebar-item">
+          <span>New York</span>
+          <span class="sidebar-count">19 gyms</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Georgia</span>
+          <span class="sidebar-count">16 gyms</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Illinois</span>
+          <span class="sidebar-count">12 gyms</span>
+        </div>
+        <div class="sidebar-item sidebar-item-more">
+          View all 38 states →
+        </div>
+      </div>
+
+      <div class="sidebar-block">
+        <div class="sidebar-block-header">Top Cities</div>
+        <a href="city.html" class="sidebar-item">
+          <span>Austin, TX</span>
+          <span class="sidebar-count">8 gyms</span>
+        </a>
+        <div class="sidebar-item">
+          <span>Houston, TX</span>
+          <span class="sidebar-count">7 gyms</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Los Angeles, CA</span>
+          <span class="sidebar-count">6 gyms</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Miami, FL</span>
+          <span class="sidebar-count">5 gyms</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Atlanta, GA</span>
+          <span class="sidebar-count">5 gyms</span>
+        </div>
+        <div class="sidebar-item sidebar-item-more">
+          View all cities →
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main>
+      <div class="results-header">
+        <p class="results-count">Showing <strong>289</strong> Gracie Barra academies</p>
+        <select style="padding:7px 12px; border-radius:var(--r-sm); border:1.5px solid var(--border); font-family:var(--font-body); font-size:0.875rem; color:var(--text); background:var(--surface); outline:none; cursor:pointer" aria-label="Sort by">
+          <option>Sort: Top Rated</option>
+          <option>Sort: Most Reviewed</option>
+          <option>Sort: Nearest</option>
+        </select>
+      </div>
+
+      <div class="gym-list">
+
+        <article class="gym-list-card" onclick="location.href='gym.html'">
+          <div class="gym-list-photo">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=75" alt="Gracie Barra Austin" loading="lazy">
+          </div>
+          <div class="gym-list-body">
+            <div class="gym-list-top">
+              <div>
+                <div class="gym-list-name">Gracie Barra Austin</div>
+                <div class="gym-list-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  2601 S Lamar Blvd, Austin, TX
+                </div>
+              </div>
+              <span class="badge badge-verified" style="font-size:0.7rem;flex-shrink:0">✓ Verified</span>
+            </div>
+            <div class="gym-list-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">Kids</span>
+              <span class="badge badge-program">Women's Only</span>
+            </div>
+            <p style="font-size:0.85rem;line-height:1.6;color:var(--text-mid)">World-class BJJ instruction for all levels. Professor Carlos Gracie Jr.'s flagship curriculum. Mon–Sat classes, morning and evening.</p>
+            <div class="gym-list-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.9rem">★★★★★</span>
+                <span class="score" style="font-size:1rem">4.9</span>
+                <span class="count">(142)</span>
+              </div>
+              <span class="badge badge-open">Open Now</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="gym-list-card">
+          <div class="gym-list-photo">
+            <img src="https://images.unsplash.com/photo-1555597673-b21d5c935865?w=400&q=75" alt="Gracie Barra Houston" loading="lazy">
+          </div>
+          <div class="gym-list-body">
+            <div class="gym-list-top">
+              <div>
+                <div class="gym-list-name">Gracie Barra Houston Heights</div>
+                <div class="gym-list-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  1234 Yale St, Houston, TX
+                </div>
+              </div>
+              <span class="badge badge-verified" style="font-size:0.7rem;flex-shrink:0">✓ Verified</span>
+            </div>
+            <div class="gym-list-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">Competition</span>
+            </div>
+            <p style="font-size:0.85rem;line-height:1.6;color:var(--text-mid)">Serving the Heights community with top-level Gracie Barra instruction. Fundamentals to advanced classes six days a week.</p>
+            <div class="gym-list-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.9rem">★★★★★</span>
+                <span class="score" style="font-size:1rem">4.8</span>
+                <span class="count">(98)</span>
+              </div>
+              <span class="badge badge-open">Open Now</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="gym-list-card">
+          <div class="gym-list-photo">
+            <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=400&q=75" alt="Gracie Barra Atlanta" loading="lazy">
+          </div>
+          <div class="gym-list-body">
+            <div class="gym-list-top">
+              <div>
+                <div class="gym-list-name">Gracie Barra Atlanta</div>
+                <div class="gym-list-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  880 Marietta St NW, Atlanta, GA
+                </div>
+              </div>
+            </div>
+            <div class="gym-list-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">Kids</span>
+              <span class="badge badge-program">Women's Only</span>
+            </div>
+            <p style="font-size:0.85rem;line-height:1.6;color:var(--text-mid)">Atlanta's premier Gracie Barra academy. Structured curriculum, welcoming community, and competition team for those looking to compete.</p>
+            <div class="gym-list-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.9rem">★★★★½</span>
+                <span class="score" style="font-size:1rem">4.7</span>
+                <span class="count">(67)</span>
+              </div>
+              <span class="badge badge-closed">Closed · Opens 6am</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="gym-list-card">
+          <div class="gym-list-photo">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=75" alt="Gracie Barra Miami" loading="lazy">
+          </div>
+          <div class="gym-list-body">
+            <div class="gym-list-top">
+              <div>
+                <div class="gym-list-name">Gracie Barra Miami Lakes</div>
+                <div class="gym-list-location">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  6820 Main St, Miami Lakes, FL
+                </div>
+              </div>
+            </div>
+            <div class="gym-list-programs">
+              <span class="badge badge-program">BJJ</span>
+              <span class="badge badge-program">No-Gi</span>
+              <span class="badge badge-program">MMA</span>
+              <span class="badge badge-program">Kids</span>
+            </div>
+            <p style="font-size:0.85rem;line-height:1.6;color:var(--text-mid)">Full-service academy with daily fundamentals, advanced, and no-gi classes. Kids program runs Tuesday through Saturday.</p>
+            <div class="gym-list-footer">
+              <div class="rating-row">
+                <span class="stars" style="font-size:0.9rem">★★★★½</span>
+                <span class="score" style="font-size:1rem">4.6</span>
+                <span class="count">(54)</span>
+              </div>
+              <span class="badge badge-open">Open Now</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <div style="text-align:center; margin-top:32px">
+        <button class="btn btn-outline" style="padding:12px 40px">Load More Gyms</button>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">mat<span>made</span></div>
+        <p class="footer-desc">The world's largest BJJ and martial arts gym directory.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="#">Find Gyms</a></li>
+          <li><a href="#">Browse by State</a></li>
+          <li><a href="#">Browse by City</a></li>
+          <li><a href="#">Browse by Affiliation</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Content</div>
+        <ul class="footer-links">
+          <li><a href="#">The Show</a></li>
+          <li><a href="#">Stories</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Add Your Gym</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MatMade. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item" style="text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <div class="mobile-nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      Map
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </div>
+  </div>
+</nav>
+
+<script src="js/app.js"></script>
+</body>
+</html>
