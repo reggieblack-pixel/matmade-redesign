@@ -1,0 +1,22 @@
+# OS junk
+.DS_Store
+Thumbs.db
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local tooling / state
+.wrangler/
+node_modules/
+*.log
+
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
